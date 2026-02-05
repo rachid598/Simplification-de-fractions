@@ -194,18 +194,19 @@ input{font-family:var(--font);outline:none;border:none}
 /* ============================================================
    RESULT SCREEN
    ============================================================ */
-#resultScreen{align-items:center;justify-content:center;gap:14px;padding:20px;background:linear-gradient(160deg,#0b0b1f,#151530 60%,#1e1e42);overflow-y:auto;-webkit-overflow-scrolling:touch}
+#resultScreen{align-items:center;justify-content:center;gap:18px;padding:20px;background:linear-gradient(160deg,#0b0b1f,#151530 60%,#1e1e42);overflow-y:auto;-webkit-overflow-scrolling:touch;text-align:center}
+.result-card{width:100%;max-width:320px;margin:0 auto;background:var(--bg-card);border-radius:var(--radius-lg);padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
 .result-title{font-size:1.8rem;font-weight:900}
-.result-stars{display:flex;gap:10px;font-size:2.2rem}
+.result-stars{display:flex;justify-content:center;gap:10px;font-size:2.2rem}
 .result-stars .star{opacity:.18;filter:grayscale(1);transition:opacity .4s,transform .4s}
 .result-stars .star.earned{opacity:1;filter:grayscale(0);animation:star-in .45s ease backwards}
 @keyframes star-in{from{transform:scale(0) rotate(-25deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
-.result-score-block{text-align:center}
+.result-score-block{text-align:center;width:100%}
 .result-score-label{display:block;font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
 .result-score-value{font-size:2.6rem;font-weight:900;color:var(--accent)}
-.result-stats{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--text-dim);text-align:center}
+.result-stats{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--text-dim);text-align:center;width:100%}
 .result-stats .stat-highlight{color:var(--success);font-weight:700}
-.result-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px;width:100%}
+.result-actions{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:320px}
 
 /* ============================================================
    HELP MODAL
@@ -254,6 +255,7 @@ input{font-family:var(--font);outline:none;border:none}
     .btn-help{bottom:36px;width:36px;height:36px;font-size:.95rem}
     .feedback{font-size:.8rem}
     .feedback.perfect{font-size:1rem}
+    .result-card{padding:20px 16px;gap:10px}
     .result-score-value{font-size:2rem}
     .result-stars{font-size:1.8rem}
     .error-fraction .ef-num,.error-fraction .ef-den{font-size:clamp(1.2rem,5.5vw,1.7rem)}
@@ -373,13 +375,15 @@ input{font-family:var(--font);outline:none;border:none}
 
     <!-- ==================== RESULT ==================== -->
     <div id="resultScreen" class="screen">
-        <h2 class="result-title" id="resultTitle">Termin&eacute; !</h2>
-        <div class="result-stars" id="resultStars"></div>
-        <div class="result-score-block">
-            <span class="result-score-label">Score final</span>
-            <span class="result-score-value" id="finalScore">0</span>
+        <div class="result-card">
+            <h2 class="result-title" id="resultTitle">Termin&eacute; !</h2>
+            <div class="result-stars" id="resultStars"></div>
+            <div class="result-score-block">
+                <span class="result-score-label">Score final</span>
+                <span class="result-score-value" id="finalScore">0</span>
+            </div>
+            <div class="result-stats" id="resultStats"></div>
         </div>
-        <div class="result-stats" id="resultStats"></div>
         <div class="result-actions">
             <button id="replayBtn" class="btn-primary">REJOUER</button>
             <button id="menuBtn" class="btn-secondary">MENU</button>
