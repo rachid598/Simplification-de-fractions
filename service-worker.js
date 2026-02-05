@@ -2,7 +2,7 @@
    FRAC-STRIKE — Service Worker (Cache-First Offline)
    ============================================================ */
 
-var CACHE_NAME = 'fracstrike-v2';
+var CACHE_NAME = 'fracstrike-v3';
 
 var STATIC_ASSETS = [
     '/',

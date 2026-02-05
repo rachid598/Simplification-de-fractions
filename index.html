@@ -3,34 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="theme-color" content="#0b0b1f">
+    <meta name="theme-color" content="#4361ee">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="description" content="Frac-Strike — Simplifie les fractions !">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Patrick+Hand&display=swap" rel="stylesheet">
     <title>Frac-Strike</title>
 <style>
 /* ============================================================
-   CSS VARIABLES
+   CSS VARIABLES — Light notebook theme
    ============================================================ */
-:root {
-    --bg:        #0b0b1f;
-    --bg-card:   #151530;
-    --bg-surface:#1e1e42;
-    --primary:   #4361ee;
-    --success:   #06d6a0;
-    --accent:    #ff9f1c;
-    --error:     #ef476f;
-    --text:      #f0f0f8;
-    --text-dim:  #8888aa;
-    --radius:    12px;
-    --radius-lg: 20px;
-    --font:      'Montserrat','Segoe UI',system-ui,sans-serif;
+:root{
+    --bg:#f5f3ee;
+    --bg-card:#ffffff;
+    --bg-surface:#ece8df;
+    --primary:#4361ee;
+    --success:#2dc653;
+    --accent:#ff9f1c;
+    --error:#ef476f;
+    --text:#2d3436;
+    --text-dim:#636e72;
+    --num-color:#2b59c3;
+    --den-color:#c7365f;
+    --radius:12px;
+    --radius-lg:20px;
+    --font:'Nunito','Segoe UI',system-ui,sans-serif;
+    --font-frac:'Patrick Hand',cursive;
 }
 /* ============================================================
    RESET
@@ -49,255 +52,260 @@ input{font-family:var(--font);outline:none;border:none}
 .screen.active{opacity:1;pointer-events:auto;transform:translateY(0)}
 
 /* ============================================================
-   MENU SCREEN
+   WELCOME SCREEN
    ============================================================ */
-#menuScreen{padding:20px;align-items:center;justify-content:center;gap:18px;background:linear-gradient(160deg,#0b0b1f,#151530 50%,#1e1e42);overflow-y:auto;-webkit-overflow-scrolling:touch}
-.menu-header{text-align:center}
-.title{font-size:clamp(2rem,9vw,3rem);font-weight:900;letter-spacing:2px;line-height:1.1}
-.accent{color:var(--accent)}
-.subtitle{font-size:.95rem;color:var(--text-dim);margin-top:4px}
-.section-title{font-size:.85rem;font-weight:600;color:var(--text-dim);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
-.level-selector{width:100%}
-.level-cards{display:flex;flex-direction:column;gap:8px}
-.level-card{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius);color:var(--text);text-align:left;transition:border-color .2s,background .2s,transform .12s}
+#welcomeScreen{padding:20px;align-items:center;justify-content:center;gap:14px;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.welcome-header{text-align:center}
+.welcome-title{font-size:clamp(2rem,9vw,3rem);font-weight:900;letter-spacing:2px;line-height:1.1}
+.welcome-accent{color:var(--accent)}
+.welcome-sub{font-size:.9rem;color:var(--text-dim);margin-top:4px}
+.student-form{width:100%;max-width:280px;display:flex;flex-direction:column;gap:8px}
+.form-field{display:flex;flex-direction:column;gap:3px}
+.form-label{font-size:.72rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.form-input{padding:10px 14px;font-size:1rem;font-weight:600;background:var(--bg-card);border:2px solid var(--bg-surface);border-radius:var(--radius);color:var(--text);transition:border-color .2s}
+.form-input:focus{border-color:var(--primary)}
+.section-title{font-size:.8rem;font-weight:700;color:var(--text-dim);text-align:center;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.level-selector{width:100%;max-width:320px}
+.level-cards{display:flex;gap:8px}
+.level-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius);text-align:center;transition:border-color .2s,background .2s,transform .12s}
 .level-card:active{transform:scale(.97)}
-.level-card.selected{border-color:var(--primary);background:rgba(67,97,238,.1)}
-.level-badge{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--bg-surface);font-weight:800;font-size:1rem;flex-shrink:0}
-.level-card.selected .level-badge{background:var(--primary)}
-.level-name{font-weight:700;font-size:.95rem;display:block}
-.level-desc{font-size:.75rem;color:var(--text-dim);display:block}
-
-/* --- Buttons --- */
-.btn-primary{width:100%;max-width:260px;padding:14px 28px;background:var(--primary);color:var(--text);font-size:1.1rem;font-weight:800;letter-spacing:2px;border-radius:50px;box-shadow:0 4px 20px rgba(67,97,238,.4);transition:transform .12s,box-shadow .12s}
-.btn-primary:active{transform:scale(.95);box-shadow:0 2px 10px rgba(67,97,238,.3)}
+.level-card.selected{border-color:var(--primary);background:rgba(67,97,238,.07)}
+.level-badge{width:32px;height:32px;border-radius:50%;background:var(--bg-surface);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;flex-shrink:0}
+.level-card.selected .level-badge{background:var(--primary);color:#fff}
+.level-name{font-weight:700;font-size:.85rem}
+.level-desc{font-size:.68rem;color:var(--text-dim)}
+.btn-primary{width:100%;max-width:260px;padding:14px 28px;background:var(--primary);color:#fff;font-size:1.1rem;font-weight:800;letter-spacing:2px;border-radius:50px;box-shadow:0 4px 20px rgba(67,97,238,.3);transition:transform .12s}
+.btn-primary:active{transform:scale(.95)}
 .btn-secondary{width:100%;max-width:260px;padding:12px 28px;background:var(--bg-card);color:var(--text-dim);font-size:.95rem;font-weight:700;letter-spacing:1px;border-radius:50px;border:2px solid var(--bg-surface);transition:transform .12s}
 .btn-secondary:active{transform:scale(.95)}
-.high-scores{font-size:.8rem;color:var(--text-dim);text-align:center}
+.high-scores{font-size:.78rem;color:var(--text-dim);text-align:center}
 .high-scores .hs-value{color:var(--accent);font-weight:700}
 
 /* ============================================================
    GAME SCREEN
    ============================================================ */
 #gameScreen{background:var(--bg)}
-.game-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-card);border-bottom:1px solid rgba(255,255,255,.04);flex-shrink:0}
+.game-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--bg-card);border-bottom:1px solid rgba(0,0,0,.06);flex-shrink:0}
 .header-left,.header-right{display:flex;align-items:center;gap:5px}
-.score-label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
-.score-value{font-size:1.2rem;font-weight:800;color:var(--accent);min-width:36px;transition:transform .2s}
+.score-label{font-size:.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.score-value{font-size:1.15rem;font-weight:800;color:var(--accent);min-width:32px;transition:transform .2s}
 .score-value.bump{animation:bump .3s ease}
 @keyframes bump{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
-.combo-badge{padding:3px 12px;border-radius:20px;background:var(--bg-surface);font-weight:800;font-size:.9rem;color:var(--text-dim);transition:background .3s,color .3s,transform .2s}
-.combo-badge.hot{background:var(--primary);color:var(--text);animation:pulse-glow .5s ease}
-.combo-badge.fire{background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--text);animation:pulse-glow .5s ease}
-@keyframes pulse-glow{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
-.round-total{color:var(--text-dim);font-size:.8rem}
-#roundValue{font-weight:700;font-size:.95rem}
-.btn-icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:none;color:var(--text-dim);font-size:1rem;border-radius:50%;margin-left:2px}
+.combo-badge{padding:3px 10px;border-radius:20px;background:var(--bg-surface);font-weight:800;font-size:.85rem;color:var(--text-dim);transition:background .3s,color .3s}
+.combo-badge.hot{background:var(--primary);color:#fff}
+.combo-badge.fire{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff}
+.round-total{color:var(--text-dim);font-size:.78rem}
+#roundValue{font-weight:700;font-size:.9rem}
+.btn-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:none;color:var(--text-dim);font-size:1rem;border-radius:50%}
 
 /* --- Game Body --- */
-.game-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 14px;gap:10px;min-height:0;overflow:hidden}
+.game-body{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
 
 /* --- Feedback --- */
-.feedback-zone{min-height:32px;display:flex;align-items:center;justify-content:center;width:100%;padding:0 8px}
-.feedback{font-size:.9rem;font-weight:700;text-align:center;opacity:0;transform:translateY(-6px);transition:opacity .25s,transform .25s;max-width:100%;word-wrap:break-word}
+.feedback-zone{min-height:26px;display:flex;align-items:center;justify-content:center;padding:2px 14px;flex-shrink:0}
+.feedback{font-size:.85rem;font-weight:700;text-align:center;opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .25s;max-width:100%;word-wrap:break-word}
 .feedback.visible{opacity:1;transform:translateY(0)}
 .feedback.error{color:var(--error)}
 .feedback.success{color:var(--success)}
-.feedback.perfect{color:var(--accent);font-size:1.2rem;animation:perfect-pop .45s ease}
-@keyframes perfect-pop{0%{transform:scale(.5) translateY(-6px);opacity:0}60%{transform:scale(1.15) translateY(0);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
+.feedback.perfect{color:var(--accent);font-size:1.1rem;animation:perfect-pop .45s ease}
+@keyframes perfect-pop{0%{transform:scale(.5) translateY(-4px);opacity:0}60%{transform:scale(1.12) translateY(0);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
 .feedback.info{color:var(--primary)}
 .feedback.hint{color:var(--accent);font-style:italic}
 
 /* ============================================================
-   FRACTION ZONE
+   CHAIN AREA — Horizontal equality chain
    ============================================================ */
-.fraction-zone{display:flex;align-items:center;justify-content:center;min-height:110px;width:100%;overflow:hidden}
-.fraction{display:inline-flex;flex-direction:column;align-items:center;transition:transform .3s}
-.fraction.entrance{animation:frac-in .35s ease-out}
+.chain-scroll{flex:1;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:8px 14px;min-height:0;display:flex;align-items:center}
+.chain{display:flex;align-items:center;gap:6px;min-width:min-content;padding:4px 0}
+
+/* Chain fraction */
+.chain-frac{display:inline-flex;flex-direction:column;align-items:center;font-family:var(--font-frac);padding:6px 10px;border-radius:10px;transition:all .35s;flex-shrink:0}
+.chain-frac.entrance{animation:frac-in .35s ease-out}
 @keyframes frac-in{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-.frac-num,.frac-den{display:flex;align-items:center;justify-content:center;gap:3px;padding:3px 8px;font-size:clamp(1.8rem,9vw,3rem);font-weight:800;min-width:50px;max-width:88vw;white-space:nowrap;transition:font-size .3s,gap .3s}
-.frac-bar{width:100%;height:4px;background:var(--text);border-radius:3px;margin:3px 0;min-width:50px;transition:width .3s}
-.frac-num.decomposed,.frac-den.decomposed{font-size:clamp(1.3rem,6.5vw,2.2rem);gap:2px}
+.cf-num{display:flex;align-items:center;justify-content:center;gap:2px;font-size:clamp(1.5rem,7vw,2.2rem);font-weight:700;color:var(--num-color);padding:2px 4px;white-space:nowrap}
+.cf-den{display:flex;align-items:center;justify-content:center;gap:2px;font-size:clamp(1.5rem,7vw,2.2rem);font-weight:700;color:var(--den-color);padding:2px 4px;white-space:nowrap}
+.cf-bar{width:100%;height:3px;background:var(--text);border-radius:2px;margin:2px 0;min-width:28px}
 
-/* Factor group */
-.factor-group{position:relative;display:inline-flex;align-items:center;transition:opacity .3s,transform .3s}
-.factor-group .factor{color:var(--error);font-weight:900}
-.factor-group .times{margin:0 2px;color:var(--text-dim);font-size:.85em}
+/* Decomposed fraction parts */
+.cf-factor{position:relative;display:inline-block;transition:color .3s}
+.cf-times{font-size:.75em;color:var(--text-dim);margin:0 1px}
+.cf-quot{display:inline-block}
 
-/* Diagonal strike animation */
-.factor-group.struck::after{content:'';position:absolute;top:50%;left:-6%;width:112%;height:4px;background:var(--error);border-radius:2px;transform-origin:left center;animation:strike-oblique .35s ease-out forwards}
+/* Diagonal strike animation on factor */
+.cf-factor.struck{color:var(--error)}
+.cf-factor.struck::after{content:'';position:absolute;top:50%;left:-4px;width:calc(100% + 8px);height:3px;background:var(--error);border-radius:2px;transform-origin:left center;animation:strike-oblique .4s ease forwards}
 @keyframes strike-oblique{from{transform:translateY(-50%) rotate(-25deg) scaleX(0)}to{transform:translateY(-50%) rotate(-25deg) scaleX(1)}}
-.factor-group.fade-out{opacity:0;transform:scale(.35)}
-.quotient{transition:all .3s}
-.fraction.result-highlight{animation:result-pop .35s ease}
-@keyframes result-pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
 
-/* Digit blink for hints */
-.digit-blink{color:var(--accent);animation:digit-pulse .7s ease-in-out infinite}
-@keyframes digit-pulse{0%,100%{opacity:1}50%{opacity:.25}}
+/* Green glow for irreducible final fraction */
+.chain-frac.irreducible{border:3px solid var(--success);box-shadow:0 0 14px rgba(45,198,83,.35),0 0 4px rgba(45,198,83,.2);animation:glow-pulse 1.5s ease-in-out infinite alternate}
+@keyframes glow-pulse{from{box-shadow:0 0 8px rgba(45,198,83,.25)}to{box-shadow:0 0 22px rgba(45,198,83,.5)}}
 
-/* Hint glow on fraction */
-.fraction.hint-active .frac-num,.fraction.hint-active .frac-den{text-shadow:0 0 10px rgba(255,159,28,.4)}
+/* Chain equal sign */
+.chain-eq{font-size:clamp(1.3rem,5vw,1.8rem);font-weight:800;color:var(--text-dim);flex-shrink:0;padding:0 2px}
 
 /* ============================================================
-   INPUT ZONE (normal mode)
+   DIVISOR DISPLAY & NUMPAD
    ============================================================ */
-.input-zone{width:100%;max-width:240px;text-align:center}
-.input-label{display:block;font-size:.8rem;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
-.input-row{display:flex;gap:8px;align-items:center}
-.divisor-input{flex:1;padding:11px 12px;font-size:1.3rem;font-weight:700;text-align:center;background:var(--bg-card);color:var(--text);border:2px solid var(--bg-surface);border-radius:var(--radius);transition:border-color .2s;-moz-appearance:textfield;max-width:100%}
-.divisor-input::-webkit-inner-spin-button,.divisor-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-.divisor-input:focus{border-color:var(--primary)}
-.divisor-input.shake{animation:shake .4s ease}
+.divisor-area{flex-shrink:0;text-align:center;padding:4px 14px}
+.divisor-display{display:flex;align-items:center;justify-content:center;gap:8px}
+.divisor-label{font-size:.78rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.divisor-value{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:6px 16px;font-size:1.4rem;font-weight:800;font-family:var(--font-frac);background:var(--bg-card);border:2px solid var(--bg-surface);border-radius:var(--radius);color:var(--text);transition:border-color .2s}
+.divisor-value.active{border-color:var(--primary)}
+.divisor-value.shake{animation:shake .4s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-.btn-validate{width:50px;height:50px;border-radius:var(--radius);background:var(--primary);color:var(--text);font-size:1.3rem;font-weight:700;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(67,97,238,.35);transition:transform .12s}
-.btn-validate:active{transform:scale(.9)}
-.btn-validate:disabled{opacity:.35;pointer-events:none}
 
-/* ============================================================
-   ERROR MODE (within game screen)
-   ============================================================ */
-.error-zone{width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
-.error-prompt{font-size:.85rem;color:var(--text-dim);font-weight:600}
-.error-fractions{display:flex;align-items:center;justify-content:center;gap:14px}
-.error-arrow{font-size:1.8rem;color:var(--text-dim);font-weight:300}
-.error-fraction{display:inline-flex;flex-direction:column;align-items:center}
-.error-fraction .ef-num,.error-fraction .ef-den{font-size:clamp(1.5rem,7vw,2.2rem);font-weight:800;padding:2px 6px}
-.error-fraction .ef-bar{width:100%;height:3px;background:var(--text);border-radius:2px;margin:2px 0;min-width:30px}
-.error-fraction.wrong{color:var(--error)}
-.error-method{font-size:.85rem;color:var(--text-dim);font-style:italic;padding:4px 0}
-.error-question{font-size:1rem;font-weight:700;margin-top:2px}
-.error-buttons{display:flex;gap:14px;margin-top:4px}
-.btn-error{padding:12px 28px;border-radius:50px;font-size:1rem;font-weight:800;letter-spacing:1px;transition:transform .12s}
-.btn-error:active{transform:scale(.93)}
-.btn-error-no{background:var(--error);color:var(--text);box-shadow:0 3px 12px rgba(239,71,111,.3)}
-.btn-error-yes{background:var(--success);color:#0b0b1f;box-shadow:0 3px 12px rgba(6,214,160,.3)}
-.error-result{font-size:.9rem;color:var(--text-dim);line-height:1.5;max-width:300px;padding:6px 0}
-.error-result strong{color:var(--text)}
-.error-correct-fraction{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px}
-.error-correct-fraction span{font-weight:800;font-size:1.1rem}
-.error-correct-fraction .ecf-bar{width:100%;height:2px;background:var(--success);margin:1px 0}
+.numpad-area{flex-shrink:0;padding:4px 14px 2px;display:flex;justify-content:center}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:230px;width:100%}
+.numpad-btn{height:46px;border-radius:var(--radius);font-size:1.2rem;font-weight:700;background:var(--bg-card);color:var(--text);border:1px solid rgba(0,0,0,.07);transition:transform .1s,background .1s;box-shadow:0 2px 6px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:center}
+.numpad-btn:active{transform:scale(.93);background:var(--bg-surface)}
+.numpad-btn.btn-clear{background:#fff3e6;color:var(--accent);font-weight:800;font-size:1rem}
+.numpad-btn.btn-validate{background:var(--primary);color:#fff;font-weight:800;font-size:1.3rem;box-shadow:0 3px 12px rgba(67,97,238,.25)}
+.numpad-btn:disabled{opacity:.3;pointer-events:none}
 
 /* ============================================================
    PROGRESS BAR
    ============================================================ */
-.progress-bar{display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;flex-shrink:0}
-.progress-dot{width:9px;height:9px;border-radius:50%;background:var(--bg-surface);transition:background .3s,transform .3s}
+.progress-bar{display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 14px;flex-shrink:0}
+.progress-dot{width:8px;height:8px;border-radius:50%;background:var(--bg-surface);transition:background .3s,transform .3s}
 .progress-dot.done{background:var(--success)}
 .progress-dot.perfect-dot{background:var(--accent)}
-.progress-dot.error-dot{background:var(--primary)}
 .progress-dot.current{background:var(--primary);transform:scale(1.35)}
 
 /* --- Help FAB --- */
-.btn-help{position:absolute;bottom:46px;right:14px;width:42px;height:42px;border-radius:50%;background:var(--bg-surface);color:var(--accent);font-size:1.2rem;font-weight:800;box-shadow:0 3px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:10;transition:transform .12s}
+.btn-help{position:absolute;bottom:42px;right:14px;width:40px;height:40px;border-radius:50%;background:var(--bg-card);color:var(--accent);font-size:1.1rem;font-weight:800;box-shadow:0 3px 12px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;z-index:10;transition:transform .12s}
 .btn-help:active{transform:scale(.9)}
 
 /* ============================================================
-   RESULT SCREEN
+   RESULT / CERTIFICATE SCREEN
    ============================================================ */
-#resultScreen{align-items:center;justify-content:center;gap:18px;padding:20px;background:linear-gradient(160deg,#0b0b1f,#151530 60%,#1e1e42);overflow-y:auto;-webkit-overflow-scrolling:touch;text-align:center}
-.result-card{width:100%;max-width:320px;margin:0 auto;background:var(--bg-card);border-radius:var(--radius-lg);padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.result-title{font-size:1.8rem;font-weight:900}
-.result-stars{display:flex;justify-content:center;gap:10px;font-size:2.2rem}
-.result-stars .star{opacity:.18;filter:grayscale(1);transition:opacity .4s,transform .4s}
-.result-stars .star.earned{opacity:1;filter:grayscale(0);animation:star-in .45s ease backwards}
+#resultScreen{align-items:center;padding:14px;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.certificate{width:100%;max-width:360px;background:var(--bg-card);border:3px solid var(--primary);border-radius:var(--radius-lg);padding:22px 16px;box-shadow:0 8px 30px rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.cert-badge{font-size:2.4rem}
+.cert-title{font-size:1.3rem;font-weight:900;color:var(--primary)}
+.cert-student{font-size:.95rem;color:var(--text)}
+.cert-student strong{color:var(--primary)}
+.cert-date{font-size:.72rem;color:var(--text-dim)}
+.cert-stars{display:flex;gap:8px;font-size:2rem}
+.cert-stars .star{opacity:.15;filter:grayscale(1);transition:opacity .4s,transform .4s}
+.cert-stars .star.earned{opacity:1;filter:none;animation:star-in .45s ease backwards}
 @keyframes star-in{from{transform:scale(0) rotate(-25deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
-.result-score-block{text-align:center;width:100%}
-.result-score-label{display:block;font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
-.result-score-value{font-size:2.6rem;font-weight:900;color:var(--accent)}
-.result-stats{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--text-dim);text-align:center;width:100%}
-.result-stats .stat-highlight{color:var(--success);font-weight:700}
-.result-actions{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:320px}
+.cert-score-block{text-align:center}
+.cert-score-label{display:block;font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.cert-score-value{font-size:2.2rem;font-weight:900;color:var(--accent)}
+.cert-stats{font-size:.8rem;color:var(--text-dim);display:flex;flex-direction:column;gap:2px}
+.cert-stats .stat-hl{color:var(--success);font-weight:700}
+
+/* Chains recap */
+.chains-recap{width:100%;max-width:360px;margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.chains-recap-title{font-size:.78rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;text-align:center;letter-spacing:1px;margin-bottom:2px}
+.mini-chain-card{background:var(--bg-card);border-radius:var(--radius);padding:6px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;box-shadow:0 2px 8px rgba(0,0,0,.04);display:flex;align-items:center}
+.mini-chain-status{font-size:.9rem;margin-right:6px;flex-shrink:0}
+.mini-chain{display:flex;align-items:center;gap:3px;min-width:min-content}
+.mini-chain .chain-frac{padding:2px 4px;font-family:var(--font-frac)}
+.mini-chain .cf-num,.mini-chain .cf-den{font-size:.9rem}
+.mini-chain .cf-bar{height:2px;margin:1px 0;min-width:18px}
+.mini-chain .chain-eq{font-size:.9rem}
+.mini-chain .cf-times{font-size:.65em}
+.mini-chain .chain-frac.irreducible{border-width:2px;animation:none;box-shadow:0 0 6px rgba(45,198,83,.2)}
+.mini-chain .cf-factor.struck{color:var(--error)}
+.mini-chain .cf-factor.struck::after{height:2px;left:-2px;width:calc(100% + 4px)}
+.result-actions{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:260px;margin-top:10px}
+.cert-note{font-size:.72rem;color:var(--text-dim);font-style:italic;text-align:center;margin-top:4px}
 
 /* ============================================================
    HELP MODAL
    ============================================================ */
 .modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal.open{opacity:1;pointer-events:auto}
-.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7)}
-.modal-content{position:relative;width:90%;max-width:380px;max-height:82vh;overflow-y:auto;background:var(--bg-card);border-radius:var(--radius-lg);padding:24px 18px;box-shadow:0 10px 35px rgba(0,0,0,.5);transform:translateY(16px);transition:transform .25s}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+.modal-content{position:relative;width:90%;max-width:380px;max-height:82vh;overflow-y:auto;background:var(--bg-card);border-radius:var(--radius-lg);padding:22px 16px;box-shadow:0 10px 35px rgba(0,0,0,.12);transform:translateY(16px);transition:transform .25s}
 .modal.open .modal-content{transform:translateY(0)}
-.modal-close{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:var(--bg-surface);color:var(--text-dim);font-size:.9rem;display:flex;align-items:center;justify-content:center}
-.modal-title{font-size:1.05rem;font-weight:800;margin-bottom:14px;text-align:center}
+.modal-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:var(--bg-surface);color:var(--text-dim);font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.modal-title{font-size:1rem;font-weight:800;margin-bottom:12px;text-align:center}
 .rules-grid{display:flex;flex-direction:column;gap:8px}
-.rule-bubble{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius);background:rgba(255,255,255,.03)}
-.rule-divisor{font-size:1.2rem;font-weight:900;min-width:44px;text-align:center;flex-shrink:0}
-.rule-text{font-size:.8rem;color:var(--text-dim);line-height:1.35}
+.rule-bubble{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius);background:var(--bg-surface)}
+.rule-divisor{font-size:1.2rem;font-weight:900;min-width:40px;text-align:center;flex-shrink:0}
+.rule-text{font-size:.78rem;color:var(--text-dim);line-height:1.35}
 .rule-text strong{color:var(--text)}
 .color-blue .rule-divisor{color:#4361ee}
-.color-green .rule-divisor{color:#06d6a0}
+.color-green .rule-divisor{color:#2dc653}
 .color-orange .rule-divisor{color:#ff9f1c}
-.color-purple .rule-divisor{color:#b388ff}
+.color-purple .rule-divisor{color:#7c3aed}
 .color-red .rule-divisor{color:#ef476f}
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media(max-height:600px){
-    #menuScreen{padding:14px;gap:10px}
-    .title{font-size:1.7rem}
-    .subtitle{font-size:.8rem}
-    .section-title{font-size:.75rem;margin-bottom:5px}
-    .level-card{padding:7px 10px}
-    .level-badge{width:28px;height:28px;font-size:.8rem}
-    .level-name{font-size:.8rem}
-    .level-desc{font-size:.65rem}
+@media(max-height:620px){
+    #welcomeScreen{padding:14px;gap:8px}
+    .welcome-title{font-size:1.8rem}
+    .form-input{padding:8px 12px;font-size:.9rem}
+    .level-card{padding:7px 4px}
+    .level-badge{width:26px;height:26px;font-size:.8rem}
+    .level-name{font-size:.78rem}
+    .level-desc{font-size:.6rem}
     .btn-primary{padding:11px 20px;font-size:.95rem}
-    .game-body{padding:4px 10px;gap:6px}
-    .fraction-zone{min-height:80px}
-    .frac-num,.frac-den{font-size:clamp(1.4rem,7vw,2.2rem);padding:2px 5px}
-    .frac-num.decomposed,.frac-den.decomposed{font-size:clamp(1rem,5vw,1.6rem)}
-    .frac-bar{margin:2px 0;height:3px}
-    .input-zone{max-width:210px}
-    .divisor-input{padding:9px 10px;font-size:1.1rem}
-    .btn-validate{width:42px;height:42px;font-size:1rem}
-    .progress-bar{padding:5px 10px;gap:4px}
-    .progress-dot{width:7px;height:7px}
-    .btn-help{bottom:36px;width:36px;height:36px;font-size:.95rem}
-    .feedback{font-size:.8rem}
-    .feedback.perfect{font-size:1rem}
-    .result-card{padding:20px 16px;gap:10px}
-    .result-score-value{font-size:2rem}
-    .result-stars{font-size:1.8rem}
-    .error-fraction .ef-num,.error-fraction .ef-den{font-size:clamp(1.2rem,5.5vw,1.7rem)}
+    .chain-scroll{padding:4px 10px}
+    .cf-num,.cf-den{font-size:clamp(1.2rem,5.5vw,1.6rem)}
+    .numpad-btn{height:40px;font-size:1.05rem}
+    .numpad{gap:4px;max-width:210px}
+    .divisor-value{font-size:1.2rem;padding:4px 12px}
+    .divisor-area{padding:2px 14px}
+    .numpad-area{padding:2px 14px}
+    .progress-bar{padding:3px 10px;gap:4px}
+    .progress-dot{width:6px;height:6px}
+    .btn-help{bottom:32px;width:36px;height:36px;font-size:.95rem}
+    .feedback{font-size:.78rem}
+    .certificate{padding:16px 12px;gap:8px}
+    .cert-score-value{font-size:1.8rem}
+    .cert-stars{font-size:1.6rem}
 }
 @media(max-height:500px) and (orientation:landscape){
-    .game-body{flex-direction:row;flex-wrap:wrap;gap:6px;padding:4px 10px;justify-content:space-evenly}
-    .fraction-zone{min-height:auto;flex:1}
-    .input-zone{flex:1}
-    .feedback-zone{width:100%;min-height:22px}
-    .frac-num,.frac-den{font-size:1.4rem}
+    .game-body{padding:0}
+    .chain-scroll{padding:2px 8px}
+    .cf-num,.cf-den{font-size:1.2rem}
+    .numpad-btn{height:34px;font-size:.95rem}
+    .numpad{gap:3px;max-width:190px}
 }
-@media(min-width:480px){
-    .level-cards{flex-direction:row;gap:8px}
-    .level-card{flex-direction:column;text-align:center;padding:12px 8px}
-}
-
 .hidden{display:none!important}
 </style>
 </head>
 <body>
 <div id="app">
 
-    <!-- ==================== MENU ==================== -->
-    <div id="menuScreen" class="screen active">
-        <div class="menu-header">
-            <h1 class="title">FRAC<span class="accent">&mdash;</span>STRIKE</h1>
-            <p class="subtitle">Simplifie les fractions !</p>
+    <!-- ==================== WELCOME ==================== -->
+    <div id="welcomeScreen" class="screen active">
+        <div class="welcome-header">
+            <h1 class="welcome-title">FRAC<span class="welcome-accent">&mdash;</span>STRIKE</h1>
+            <p class="welcome-sub">Simplifie les fractions !</p>
+        </div>
+        <div class="student-form">
+            <div class="form-field">
+                <label class="form-label" for="studentName">Pr&eacute;nom</label>
+                <input type="text" id="studentName" class="form-input" placeholder="Ton pr&eacute;nom" autocomplete="given-name" maxlength="30">
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="studentClass">Classe</label>
+                <input type="text" id="studentClass" class="form-input" placeholder="Ex : 5&egrave;me B" autocomplete="off" maxlength="20">
+            </div>
         </div>
         <div class="level-selector">
-            <h2 class="section-title">Choisis ton niveau</h2>
+            <h2 class="section-title">Niveau</h2>
             <div class="level-cards">
                 <button class="level-card selected" data-level="1">
                     <span class="level-badge">1</span>
-                    <span><span class="level-name">D&eacute;butant</span><span class="level-desc">Tables de 2 &agrave; 10</span></span>
+                    <span class="level-name">D&eacute;butant</span>
+                    <span class="level-desc">Tables 2-10</span>
                 </button>
                 <button class="level-card" data-level="2">
                     <span class="level-badge">2</span>
-                    <span><span class="level-name">Expert</span><span class="level-desc">Multiples de 10, 25, 50</span></span>
+                    <span class="level-name">Expert</span>
+                    <span class="level-desc">10, 25, 50</span>
                 </button>
                 <button class="level-card" data-level="3">
                     <span class="level-badge">3</span>
-                    <span><span class="level-name">L&eacute;gende</span><span class="level-desc">Nombres jusqu&rsquo;&agrave; 200</span></span>
+                    <span class="level-name">L&eacute;gende</span>
+                    <span class="level-desc">Jusqu&rsquo;&agrave; 200</span>
                 </button>
             </div>
         </div>
@@ -312,7 +320,7 @@ input{font-family:var(--font);outline:none;border:none}
                 <span class="score-label">Score</span>
                 <span class="score-value" id="scoreValue">0</span>
             </div>
-            <div class="header-center">
+            <div style="display:flex;align-items:center;gap:6px">
                 <div class="combo-badge" id="comboBadge"><span id="comboValue">x1</span></div>
             </div>
             <div class="header-right">
@@ -324,47 +332,34 @@ input{font-family:var(--font);outline:none;border:none}
         <div class="game-body">
             <div class="feedback-zone"><div class="feedback" id="feedback"></div></div>
 
-            <!-- Normal Mode -->
-            <div id="normalMode">
-                <div class="fraction-zone">
-                    <div class="fraction" id="fraction">
-                        <div class="frac-num" id="fracNum"><span>18</span></div>
-                        <div class="frac-bar"></div>
-                        <div class="frac-den" id="fracDen"><span>24</span></div>
-                    </div>
-                </div>
-                <div class="input-zone" id="inputZone">
-                    <label class="input-label" for="divisorInput">Divise par :</label>
-                    <div class="input-row">
-                        <input type="number" id="divisorInput" class="divisor-input" min="2" inputmode="numeric" pattern="[0-9]*" placeholder="?" autocomplete="off">
-                        <button id="validateBtn" class="btn-validate" aria-label="Valider">&#10003;</button>
-                    </div>
+            <!-- Equality chain (scrollable) -->
+            <div class="chain-scroll" id="chainScroll">
+                <div class="chain" id="chain"></div>
+            </div>
+
+            <!-- Divisor display -->
+            <div class="divisor-area">
+                <div class="divisor-display">
+                    <span class="divisor-label">Divise par :</span>
+                    <span class="divisor-value" id="divisorDisplay">?</span>
                 </div>
             </div>
 
-            <!-- Error Mode -->
-            <div id="errorMode" class="hidden">
-                <div class="error-zone" id="errorZone">
-                    <div class="error-prompt">Un &eacute;l&egrave;ve a simplifi&eacute; :</div>
-                    <div class="error-fractions">
-                        <div class="error-fraction" id="errOriginal">
-                            <span class="ef-num"></span><div class="ef-bar"></div><span class="ef-den"></span>
-                        </div>
-                        <div class="error-arrow">&rarr;</div>
-                        <div class="error-fraction wrong" id="errWrong">
-                            <span class="ef-num"></span><div class="ef-bar"></div><span class="ef-den"></span>
-                        </div>
-                    </div>
-                    <div class="error-method" id="errMethod"></div>
-                    <div class="error-question">Est-ce correct ?</div>
-                    <div class="error-buttons">
-                        <button class="btn-error btn-error-no" id="errorNoBtn">NON</button>
-                        <button class="btn-error btn-error-yes" id="errorYesBtn">OUI</button>
-                    </div>
-                </div>
-                <!-- Error feedback replaces error-zone -->
-                <div class="error-zone hidden" id="errorFeedbackZone">
-                    <div class="error-result" id="errorResultText"></div>
+            <!-- Custom Numpad -->
+            <div class="numpad-area">
+                <div class="numpad" id="numpad">
+                    <button class="numpad-btn" data-digit="1">1</button>
+                    <button class="numpad-btn" data-digit="2">2</button>
+                    <button class="numpad-btn" data-digit="3">3</button>
+                    <button class="numpad-btn" data-digit="4">4</button>
+                    <button class="numpad-btn" data-digit="5">5</button>
+                    <button class="numpad-btn" data-digit="6">6</button>
+                    <button class="numpad-btn" data-digit="7">7</button>
+                    <button class="numpad-btn" data-digit="8">8</button>
+                    <button class="numpad-btn" data-digit="9">9</button>
+                    <button class="numpad-btn btn-clear" data-action="clear">C</button>
+                    <button class="numpad-btn" data-digit="0">0</button>
+                    <button class="numpad-btn btn-validate" data-action="validate">&#10003;</button>
                 </div>
             </div>
         </div>
@@ -373,21 +368,28 @@ input{font-family:var(--font);outline:none;border:none}
         <button id="helpBtn" class="btn-help" aria-label="Aide">?</button>
     </div>
 
-    <!-- ==================== RESULT ==================== -->
+    <!-- ==================== RESULT / CERTIFICATE ==================== -->
     <div id="resultScreen" class="screen">
-        <div class="result-card">
-            <h2 class="result-title" id="resultTitle">Termin&eacute; !</h2>
-            <div class="result-stars" id="resultStars"></div>
-            <div class="result-score-block">
-                <span class="result-score-label">Score final</span>
-                <span class="result-score-value" id="finalScore">0</span>
+        <div class="certificate" id="certificate">
+            <div class="cert-badge" id="certBadge">&#127942;</div>
+            <h2 class="cert-title" id="certTitle">Certificat de r&eacute;ussite</h2>
+            <div class="cert-student" id="certStudent"></div>
+            <div class="cert-date" id="certDate"></div>
+            <div class="cert-stars" id="certStars"></div>
+            <div class="cert-score-block">
+                <span class="cert-score-label">Score final</span>
+                <span class="cert-score-value" id="finalScore">0</span>
             </div>
-            <div class="result-stats" id="resultStats"></div>
+            <div class="cert-stats" id="certStats"></div>
+        </div>
+        <div class="chains-recap" id="chainsRecap">
+            <div class="chains-recap-title">Cha&icirc;nes d'&eacute;galit&eacute;s</div>
         </div>
         <div class="result-actions">
             <button id="replayBtn" class="btn-primary">REJOUER</button>
             <button id="menuBtn" class="btn-secondary">MENU</button>
         </div>
+        <p class="cert-note">Montre cet &eacute;cran &agrave; ton prof !</p>
     </div>
 
     <!-- ==================== HELP MODAL ==================== -->
@@ -397,26 +399,11 @@ input{font-family:var(--font);outline:none;border:none}
             <button class="modal-close" id="closeHelp" aria-label="Fermer">&#10005;</button>
             <h2 class="modal-title">Crit&egrave;res de divisibilit&eacute;</h2>
             <div class="rules-grid">
-                <div class="rule-bubble color-blue">
-                    <div class="rule-divisor">&divide; 2</div>
-                    <div class="rule-text">Le dernier chiffre est <strong>pair</strong> (0, 2, 4, 6, 8)</div>
-                </div>
-                <div class="rule-bubble color-green">
-                    <div class="rule-divisor">&divide; 3</div>
-                    <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 3</div>
-                </div>
-                <div class="rule-bubble color-orange">
-                    <div class="rule-divisor">&divide; 5</div>
-                    <div class="rule-text">Le dernier chiffre est <strong>0</strong> ou <strong>5</strong></div>
-                </div>
-                <div class="rule-bubble color-purple">
-                    <div class="rule-divisor">&divide; 9</div>
-                    <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 9</div>
-                </div>
-                <div class="rule-bubble color-red">
-                    <div class="rule-divisor">&divide; 10</div>
-                    <div class="rule-text">Le dernier chiffre est <strong>0</strong></div>
-                </div>
+                <div class="rule-bubble color-blue"><div class="rule-divisor">&divide; 2</div><div class="rule-text">Le dernier chiffre est <strong>pair</strong> (0, 2, 4, 6, 8)</div></div>
+                <div class="rule-bubble color-green"><div class="rule-divisor">&divide; 3</div><div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 3</div></div>
+                <div class="rule-bubble color-orange"><div class="rule-divisor">&divide; 5</div><div class="rule-text">Le dernier chiffre est <strong>0</strong> ou <strong>5</strong></div></div>
+                <div class="rule-bubble color-purple"><div class="rule-divisor">&divide; 9</div><div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 9</div></div>
+                <div class="rule-bubble color-red"><div class="rule-divisor">&divide; 10</div><div class="rule-text">Le dernier chiffre est <strong>0</strong></div></div>
             </div>
         </div>
     </div>
@@ -424,7 +411,7 @@ input{font-family:var(--font);outline:none;border:none}
 
 <script>
 /* ============================================================
-   FRAC-STRIKE — Game Engine
+   FRAC-STRIKE v4 — Equality Chain Engine
    ============================================================ */
 (function(){
 'use strict';
@@ -432,33 +419,34 @@ input{font-family:var(--font);outline:none;border:none}
 /* ========== CONFIG ========== */
 var TOTAL_ROUNDS=10;
 var HINT_DELAY=8000;
-var ANIM={STRIKE:650,FADE:450,RESULT:400,NEXT:1300};
-var ERROR_ROUNDS_COUNT=2;
+var ANIM={DECOMP:350,STRIKE:500,RESULT:400,NEXT:1400};
 
 /* ========== STATE ========== */
 var S={
+    studentName:'',studentClass:'',
     level:1,score:0,combo:0,maxCombo:0,
     round:0,steps:0,perfectCount:0,
     currentNum:0,currentDen:0,originalGCD:0,
+    originalNum:0,originalDen:0,
     animating:false,soundEnabled:true,
-    roundResults:[],errorRounds:[],
-    hintTimer:null,isErrorRound:false,
-    currentError:null
+    roundResults:[],currentChainSteps:[],
+    hintTimer:null,divisorInput:''
 };
 
 /* ========== DOM ========== */
 var $={};
 function cacheDom(){
-    var ids=['menuScreen','gameScreen','resultScreen','playBtn','replayBtn',
-        'menuBtn','fracNum','fracDen','fraction','divisorInput','validateBtn',
-        'inputZone','normalMode','errorMode','errorZone','errorFeedbackZone',
-        'errOriginal','errWrong','errMethod','errorResultText','errorNoBtn','errorYesBtn',
+    var ids=['welcomeScreen','gameScreen','resultScreen','playBtn','replayBtn',
+        'menuBtn','chain','chainScroll','divisorDisplay','numpad',
         'feedback','scoreValue','comboValue','comboBadge','roundValue','progressBar',
         'helpBtn','helpModal','closeHelp','soundBtn','soundIcon',
-        'resultTitle','resultStars','finalScore','resultStats','highScores'];
-    ids.forEach(function(id){$[id]=document.getElementById(id)});
+        'certTitle','certBadge','certStudent','certDate','certStars',
+        'finalScore','certStats','chainsRecap','highScores',
+        'studentName','studentClass','certificate'];
+    for(var i=0;i<ids.length;i++){$[ids[i]]=document.getElementById(ids[i])}
     $.levelCards=document.querySelectorAll('.level-card');
     $.modalOverlay=$.helpModal.querySelector('.modal-overlay');
+    $.numpadBtns=$.numpad.querySelectorAll('.numpad-btn');
 }
 
 /* ========== AUDIO ========== */
@@ -473,7 +461,7 @@ var SFX=(function(){
         error:function(){t(220,.22,'sawtooth',.1)},
         strike:function(){t(380,.12,'triangle',.08)},
         levelUp:function(){[523,587,659,784,1047].forEach(function(f,i){setTimeout(function(){t(f,.1)},i*70)})}
-    }
+    };
 })();
 
 /* ========== MATH ========== */
@@ -496,82 +484,13 @@ function generateFraction(level){
             f=randInt(2,Math.min(15,Math.floor(200/td)));break;
         default:tn=1;td=2;f=2;
     }
-    return{num:tn*f,den:td*f,targetNum:tn,targetDen:td,pgcd:f}
-}
-
-/* ========== ERROR MODE GENERATION ========== */
-function generateErrorQuestion(level){
-    var fr=generateFraction(level);
-    var n=fr.num,d=fr.den,g=fr.pgcd,cn=fr.targetNum,cd=fr.targetDen;
-    var showCorrect=Math.random()<.2;
-    if(showCorrect){
-        return{originalNum:n,originalDen:d,shownNum:cn,shownDen:cd,
-            correctNum:cn,correctDen:cd,pgcd:g,isCorrect:true,
-            methodText:'"J\'ai divis\u00e9 par '+g+' en haut et en bas"',
-            explanation:'Cet \u00e9l\u00e8ve a bien simplifi\u00e9 ! On divise le num\u00e9rateur et le d\u00e9nominateur par '+g+'.'}
-    }
-    var errType=Math.random()<.6?'subtract':'oneSided';
-    var wn,wd,mt,expl;
-    if(errType==='subtract'){
-        wn=n-g;wd=d-g;
-        if(wn<=0||wd<=0||(wn===cn&&wd===cd)){errType='oneSided'}
-        else{mt='"J\'ai soustrait '+g+' en haut et en bas"';expl='Pour simplifier, on <strong>divise</strong> le num\u00e9rateur et le d\u00e9nominateur par le m\u00eame nombre. On ne soustrait pas !'}
-    }
-    if(errType==='oneSided'){
-        if(Math.random()<.5){wn=cn;wd=d;mt='"J\'ai divis\u00e9 seulement le num\u00e9rateur par '+g+'"'}
-        else{wn=n;wd=cd;mt='"J\'ai divis\u00e9 seulement le d\u00e9nominateur par '+g+'"'}
-        expl='Il faut diviser le num\u00e9rateur <strong>ET</strong> le d\u00e9nominateur par le m\u00eame nombre !'
-    }
-    return{originalNum:n,originalDen:d,shownNum:wn,shownDen:wd,
-        correctNum:cn,correctDen:cd,pgcd:g,isCorrect:false,
-        methodText:mt,explanation:expl}
-}
-
-/* ========== HINT SYSTEM ========== */
-function getHint(n,d){
-    if(n%10===0&&d%10===0)return{div:10,msg:'Les deux finissent par 0\u2026 essaie 10 !',type:'last'};
-    if(n%5===0&&d%5===0)return{div:5,msg:'Ils finissent par 0 ou 5\u2026 tente le 5 !',type:'last'};
-    if(n%2===0&&d%2===0)return{div:2,msg:'Les deux sont pairs\u2026 essaie 2 !',type:'last'};
-    if(digitSum(n)%9===0&&digitSum(d)%9===0)return{div:9,msg:'La somme des chiffres est divisible par 9 !',type:'all'};
-    if(digitSum(n)%3===0&&digitSum(d)%3===0)return{div:3,msg:'La somme des chiffres est divisible par 3 !',type:'all'};
-    return{div:gcd(n,d),msg:'Cherche un diviseur commun\u2026',type:'none'}
-}
-function startHintTimer(){
-    clearTimeout(S.hintTimer);
-    S.hintTimer=setTimeout(showHint,HINT_DELAY);
-}
-function clearHintTimer(){clearTimeout(S.hintTimer)}
-function showHint(){
-    var h=getHint(S.currentNum,S.currentDen);
-    showFeedback(h.msg,'hint');
-    highlightDigits(h.type);
-    $.fraction.classList.add('hint-active');
-}
-function clearHintState(){
-    $.fraction.classList.remove('hint-active');
-    restoreFractionDisplay();
-}
-function highlightDigits(type){
-    if(type==='none')return;
-    var ns=String(S.currentNum),ds=String(S.currentDen);
-    if(type==='last'){
-        $.fracNum.innerHTML=ns.slice(0,-1)+'<span class="digit-blink">'+ns.slice(-1)+'</span>';
-        $.fracDen.innerHTML=ds.slice(0,-1)+'<span class="digit-blink">'+ds.slice(-1)+'</span>';
-    }else{
-        $.fracNum.innerHTML=ns.split('').map(function(c){return'<span class="digit-blink">'+c+'</span>'}).join('');
-        $.fracDen.innerHTML=ds.split('').map(function(c){return'<span class="digit-blink">'+c+'</span>'}).join('');
-    }
-}
-function restoreFractionDisplay(){
-    if(S.currentNum){
-        $.fracNum.innerHTML='<span>'+S.currentNum+'</span>';
-        $.fracDen.innerHTML='<span>'+S.currentDen+'</span>';
-    }
+    return{num:tn*f,den:td*f,targetNum:tn,targetDen:td,pgcd:f};
 }
 
 /* ========== SCREENS ========== */
 function showScreen(id){
-    [$.menuScreen,$.gameScreen,$.resultScreen].forEach(function(s){s.classList.remove('active')});
+    var screens=[$.welcomeScreen,$.gameScreen,$.resultScreen];
+    for(var i=0;i<screens.length;i++){screens[i].classList.remove('active')}
     $[id].classList.add('active');
 }
 
@@ -595,7 +514,6 @@ function updateProgress(){
             dots[i].classList.add('done');
             var r=S.roundResults[i];
             if(r&&r.perfect)dots[i].classList.add('perfect-dot');
-            if(r&&r.errorRound)dots[i].classList.add('error-dot');
         }else if(i===S.round-1){dots[i].classList.add('current')}
     }
 }
@@ -615,157 +533,255 @@ function updateCombo(){
     else if(S.combo>=3)$.comboBadge.classList.add('hot');
 }
 
-/* ========== FRACTION DISPLAY ========== */
-function showFraction(n,d,anim){
-    $.fracNum.innerHTML='<span>'+n+'</span>';
-    $.fracDen.innerHTML='<span>'+d+'</span>';
-    $.fracNum.classList.remove('decomposed');$.fracDen.classList.remove('decomposed');
-    if(anim){$.fraction.classList.remove('entrance');void $.fraction.offsetWidth;$.fraction.classList.add('entrance')}
+/* ========== CHAIN BUILDING ========== */
+function clearChain(){$.chain.innerHTML='';S.currentChainSteps=[]}
+
+function addChainFraction(num,den,isIrreducible){
+    var frac=document.createElement('div');
+    frac.className='chain-frac entrance'+(isIrreducible?' irreducible':'');
+    frac.innerHTML='<div class="cf-num">'+num+'</div><div class="cf-bar"></div><div class="cf-den">'+den+'</div>';
+    $.chain.appendChild(frac);
+    S.currentChainSteps.push({type:'frac',num:num,den:den,final:!!isIrreducible});
+    return frac;
 }
 
-/* ========== DECOMPOSITION ANIMATION ========== */
-function animateDecomposition(num,den,div,qN,qD,cb){
-    S.animating=true;$.validateBtn.disabled=true;
-    var h='<span class="factor-group"><span class="factor">'+div+'</span><span class="times">&times;</span></span><span class="quotient">'+qN+'</span>';
-    var hd='<span class="factor-group"><span class="factor">'+div+'</span><span class="times">&times;</span></span><span class="quotient">'+qD+'</span>';
-    $.fracNum.innerHTML=h;$.fracDen.innerHTML=hd;
-    $.fracNum.classList.add('decomposed');$.fracDen.classList.add('decomposed');
+function addChainDecomp(qNum,factor,qDen){
+    var frac=document.createElement('div');
+    frac.className='chain-frac entrance';
+    frac.innerHTML=
+        '<div class="cf-num"><span class="cf-quot">'+qNum+'</span><span class="cf-times">&times;</span><span class="cf-factor">'+factor+'</span></div>'+
+        '<div class="cf-bar"></div>'+
+        '<div class="cf-den"><span class="cf-quot">'+qDen+'</span><span class="cf-times">&times;</span><span class="cf-factor">'+factor+'</span></div>';
+    $.chain.appendChild(frac);
+    S.currentChainSteps.push({type:'decomp',factor:factor,qNum:qNum,qDen:qDen});
+    return frac;
+}
+
+function addChainEqual(){
+    var eq=document.createElement('div');
+    eq.className='chain-eq';
+    eq.textContent='=';
+    $.chain.appendChild(eq);
+}
+
+function scrollChainRight(){
     setTimeout(function(){
-        document.querySelectorAll('.factor-group').forEach(function(g){g.classList.add('struck')});SFX.strike()
-    },ANIM.STRIKE);
+        $.chainScroll.scrollTo({left:$.chainScroll.scrollWidth,behavior:'smooth'});
+    },50);
+}
+
+/* ========== NUMPAD ========== */
+function updateDivisorDisplay(){
+    $.divisorDisplay.textContent=S.divisorInput||'?';
+    $.divisorDisplay.classList.toggle('active',S.divisorInput.length>0);
+}
+function clearDivisorInput(){S.divisorInput='';updateDivisorDisplay()}
+function appendDigit(d){
+    if(S.divisorInput.length>=3)return;
+    S.divisorInput+=d;updateDivisorDisplay();
+    clearHintTimer();clearHintState();startHintTimer();
+}
+function setNumpadEnabled(enabled){
+    for(var i=0;i<$.numpadBtns.length;i++){$.numpadBtns[i].disabled=!enabled}
+}
+
+/* ========== HINT SYSTEM ========== */
+function getHint(n,d){
+    if(n%10===0&&d%10===0)return{div:10,msg:'Les deux finissent par 0\u2026 essaie 10 !'};
+    if(n%5===0&&d%5===0)return{div:5,msg:'Ils finissent par 0 ou 5\u2026 tente le 5 !'};
+    if(n%2===0&&d%2===0)return{div:2,msg:'Les deux sont pairs\u2026 essaie 2 !'};
+    if(digitSum(n)%9===0&&digitSum(d)%9===0)return{div:9,msg:'La somme des chiffres est \u00f7 par 9 !'};
+    if(digitSum(n)%3===0&&digitSum(d)%3===0)return{div:3,msg:'La somme des chiffres est \u00f7 par 3 !'};
+    return{div:gcd(n,d),msg:'Cherche un diviseur commun\u2026'};
+}
+function startHintTimer(){clearTimeout(S.hintTimer);S.hintTimer=setTimeout(showHint,HINT_DELAY)}
+function clearHintTimer(){clearTimeout(S.hintTimer)}
+function showHint(){var h=getHint(S.currentNum,S.currentDen);showFeedback(h.msg,'hint')}
+function clearHintState(){clearFeedback()}
+
+/* ========== ANIMATION SEQUENCE ========== */
+function animateStep(div,qN,qD){
+    S.animating=true;setNumpadEnabled(false);
+
+    /* 1 — Equal sign + decomposed fraction */
+    addChainEqual();
+    var decomp=addChainDecomp(qN,div,qD);
+    scrollChainRight();
+
+    /* 2 — Strike factors */
     setTimeout(function(){
-        document.querySelectorAll('.factor-group').forEach(function(g){g.classList.add('fade-out')})
-    },ANIM.STRIKE+ANIM.FADE);
-    setTimeout(function(){
-        showFraction(qN,qD,false);
-        $.fraction.classList.add('result-highlight');setTimeout(function(){$.fraction.classList.remove('result-highlight')},350);
-        S.animating=false;$.validateBtn.disabled=false;cb()
-    },ANIM.STRIKE+ANIM.FADE+ANIM.RESULT);
+        var factors=decomp.querySelectorAll('.cf-factor');
+        for(var i=0;i<factors.length;i++){factors[i].classList.add('struck')}
+        SFX.strike();
+
+        /* 3 — Equal sign + simplified fraction */
+        setTimeout(function(){
+            S.currentNum=qN;S.currentDen=qD;
+            addChainEqual();
+            var isIrr=gcd(qN,qD)===1;
+            addChainFraction(qN,qD,isIrr);
+            scrollChainRight();
+
+            setTimeout(function(){
+                S.animating=false;
+                if(isIrr){
+                    endRound(S.steps===1);
+                }else{
+                    setNumpadEnabled(true);
+                    showFeedback('Continue ! Tu peux encore simplifier.','info',2500);
+                    startHintTimer();
+                }
+            },ANIM.RESULT);
+        },ANIM.STRIKE);
+    },ANIM.DECOMP);
 }
 
 /* ========== GAME FLOW ========== */
-function setupErrorRounds(){
-    S.errorRounds=[];
-    var pool=[];for(var i=2;i<TOTAL_ROUNDS;i++)pool.push(i);
-    for(var j=pool.length-1;j>0;j--){var k=randInt(0,j);var tmp=pool[j];pool[j]=pool[k];pool[k]=tmp}
-    for(var e=0;e<ERROR_ROUNDS_COUNT&&e<pool.length;e++)S.errorRounds.push(pool[e]);
-    S.errorRounds.sort(function(a,b){return a-b});
-}
-
 function startGame(){
     S.score=0;S.combo=0;S.maxCombo=0;S.round=0;S.perfectCount=0;S.roundResults=[];
     $.scoreValue.textContent='0';updateCombo();initProgress();
-    setupErrorRounds();
     showScreen('gameScreen');nextRound();
 }
 
 function nextRound(){
     S.round++;
     if(S.round>TOTAL_ROUNDS){endGame();return}
-    S.steps=0;S.isErrorRound=S.errorRounds.indexOf(S.round-1)!==-1;
-    $.roundValue.textContent=S.round;updateProgress();clearFeedback();
+    S.steps=0;clearDivisorInput();clearFeedback();clearChain();
+    $.roundValue.textContent=S.round;updateProgress();
 
-    if(S.isErrorRound){
-        showErrorRound();
-    }else{
-        showNormalRound();
-    }
-}
-
-/* --- Normal Round --- */
-function showNormalRound(){
-    $.normalMode.classList.remove('hidden');$.errorMode.classList.add('hidden');
     var fr=generateFraction(S.level);
     S.currentNum=fr.num;S.currentDen=fr.den;S.originalGCD=fr.pgcd;
-    showFraction(fr.num,fr.den,true);
-    $.divisorInput.value='';$.divisorInput.disabled=false;$.validateBtn.disabled=false;
+    S.originalNum=fr.num;S.originalDen=fr.den;
+
+    addChainFraction(fr.num,fr.den,false);
+    setNumpadEnabled(true);
     startHintTimer();
-    setTimeout(function(){$.divisorInput.focus()},250);
 }
 
 function submitDivisor(){
     if(S.animating)return;
     clearHintTimer();clearHintState();
-    var raw=$.divisorInput.value.trim(),d=parseInt(raw,10);
-    if(!raw||isNaN(d)){shakeInput();showFeedback('Entre un nombre !','error',2000);SFX.error();return}
-    if(d<2){shakeInput();showFeedback('Le diviseur doit \u00eatre sup\u00e9rieur \u00e0 1','error',2200);SFX.error();return}
+
+    var raw=S.divisorInput.trim(),d=parseInt(raw,10);
+    if(!raw||isNaN(d)){
+        shakeDivisor();showFeedback('Entre un nombre !','error',2000);SFX.error();return;
+    }
+    if(d<2){
+        shakeDivisor();showFeedback('Le diviseur doit \u00eatre \u2265 2','error',2200);SFX.error();clearDivisorInput();return;
+    }
     if(S.currentNum%d!==0||S.currentDen%d!==0){
-        shakeInput();showFeedback(d+' ne divise pas '+S.currentNum+' et '+S.currentDen,'error',2500);SFX.error();resetCombo();
-        startHintTimer();return;
+        shakeDivisor();
+        showFeedback(d+' ne divise pas les deux termes','error',2500);
+        SFX.error();resetCombo();clearDivisorInput();startHintTimer();return;
     }
+
     SFX.click();
-    var qN=S.currentNum/d,qD=S.currentDen/d;S.steps++;
-    $.divisorInput.value='';$.divisorInput.disabled=true;
-    animateDecomposition(S.currentNum,S.currentDen,d,qN,qD,function(){
-        S.currentNum=qN;S.currentDen=qD;
-        if(gcd(qN,qD)===1){endRound(S.steps===1)}
-        else{showFeedback('Continue ! Tu peux encore simplifier.','info',2500);$.divisorInput.disabled=false;$.divisorInput.focus();startHintTimer()}
-    });
+    var qN=S.currentNum/d,qD=S.currentDen/d;
+    S.steps++;clearDivisorInput();
+    animateStep(d,qN,qD);
 }
 
-/* --- Error Round --- */
-function showErrorRound(){
-    $.normalMode.classList.add('hidden');$.errorMode.classList.remove('hidden');
-    $.errorZone.classList.remove('hidden');$.errorFeedbackZone.classList.add('hidden');
-    $.errorNoBtn.disabled=false;$.errorYesBtn.disabled=false;
-    var eq=generateErrorQuestion(S.level);S.currentError=eq;
-    $.errOriginal.querySelector('.ef-num').textContent=eq.originalNum;
-    $.errOriginal.querySelector('.ef-den').textContent=eq.originalDen;
-    $.errWrong.querySelector('.ef-num').textContent=eq.shownNum;
-    $.errWrong.querySelector('.ef-den').textContent=eq.shownDen;
-    $.errWrong.classList.toggle('wrong',!eq.isCorrect);
-    $.errMethod.textContent=eq.methodText;
-}
-
-function answerError(answeredYes){
-    $.errorNoBtn.disabled=true;$.errorYesBtn.disabled=true;
-    var eq=S.currentError;
-    var correct=(answeredYes&&eq.isCorrect)||(!answeredYes&&!eq.isCorrect);
-    $.errorZone.classList.add('hidden');$.errorFeedbackZone.classList.remove('hidden');
-    var html='';
-    if(correct){
-        html='<div style="color:var(--success);font-weight:800;font-size:1.1rem;margin-bottom:6px">Bravo !</div>';
-        html+='<div>'+eq.explanation+'</div>';
-        html+='<div style="margin-top:8px">La fraction simplifi\u00e9e est <strong style="color:var(--success)">'+eq.correctNum+'/'+eq.correctDen+'</strong></div>';
-        addScore(100);incCombo();SFX.success();
-        S.roundResults.push({errorRound:true,perfect:false});
-    }else{
-        html='<div style="color:var(--error);font-weight:800;font-size:1.05rem;margin-bottom:6px">Pas tout \u00e0 fait\u2026</div>';
-        html+='<div>'+eq.explanation+'</div>';
-        html+='<div style="margin-top:8px">La bonne r\u00e9ponse est <strong style="color:var(--success)">'+eq.correctNum+'/'+eq.correctDen+'</strong></div>';
-        resetCombo();SFX.error();
-        S.roundResults.push({errorRound:true,perfect:false});
-    }
-    $.errorResultText.innerHTML=html;
-    updateProgress();
-    setTimeout(function(){clearFeedback();nextRound()},2200);
-}
-
-/* --- End Round --- */
 function endRound(isPerfect){
-    clearHintTimer();$.divisorInput.disabled=true;$.validateBtn.disabled=true;
+    clearHintTimer();setNumpadEnabled(false);
     if(isPerfect){S.perfectCount++;addScore(300);incCombo();showFeedback('PERFECT !','perfect');SFX.perfect()}
     else{addScore(100);incCombo();showFeedback('Bravo !','success');SFX.success()}
-    S.roundResults.push({perfect:isPerfect});updateProgress();
+
+    S.roundResults.push({
+        chain:S.currentChainSteps.slice(),
+        perfect:isPerfect
+    });
+    updateProgress();
     setTimeout(function(){clearFeedback();nextRound()},ANIM.NEXT);
 }
 
 function endGame(){
     showScreen('resultScreen');SFX.levelUp();
-    $.finalScore.textContent=S.score;
-    var sc=1;if(S.score>=800)sc=2;if(S.score>=1500||S.perfectCount>=TOTAL_ROUNDS-ERROR_ROUNDS_COUNT)sc=3;
-    var sh='';for(var i=0;i<3;i++){var e=i<sc?' earned':'';var dl=i<sc?' style="animation-delay:'+i*.2+'s"':'';sh+='<span class="star'+e+'"'+dl+'>&#9733;</span>'}
-    $.resultStars.innerHTML=sh;
-    $.resultTitle.textContent=sc===3?'Incroyable !':sc===2?'Bien jou\u00e9 !':'Termin\u00e9 !';
-    var ln=['','D\u00e9butant','Expert','L\u00e9gende'];
-    $.resultStats.innerHTML=
-        '<div>Niveau : <span class="stat-highlight">'+ln[S.level]+'</span></div>'+
-        '<div>Combo max : <span class="stat-highlight">x'+S.maxCombo+'</span></div>'+
-        '<div>Perfect : <span class="stat-highlight">'+S.perfectCount+'/'+(TOTAL_ROUNDS-ERROR_ROUNDS_COUNT)+'</span></div>';
+    buildCertificate();
     saveHS(S.level,S.score);
 }
 
-function shakeInput(){$.divisorInput.classList.remove('shake');void $.divisorInput.offsetWidth;$.divisorInput.classList.add('shake')}
+function shakeDivisor(){
+    $.divisorDisplay.classList.remove('shake');void $.divisorDisplay.offsetWidth;$.divisorDisplay.classList.add('shake');
+}
+
+/* ========== CERTIFICATE ========== */
+function buildCertificate(){
+    $.finalScore.textContent=S.score;
+
+    /* Student info */
+    var nameStr=S.studentName||'&Eacute;l&egrave;ve';
+    var classStr=S.studentClass?(' &mdash; '+S.studentClass):'';
+    $.certStudent.innerHTML='<strong>'+escHtml(S.studentName||'\u00c9l\u00e8ve')+'</strong>'+escHtml(S.studentClass?' \u2014 '+S.studentClass:'');
+
+    /* Date */
+    var now=new Date();
+    var dd=String(now.getDate()).padStart(2,'0');
+    var mm=String(now.getMonth()+1).padStart(2,'0');
+    $.certDate.textContent=dd+'/'+mm+'/'+now.getFullYear();
+
+    /* Stars */
+    var sc=1;if(S.score>=800)sc=2;if(S.score>=1500||S.perfectCount>=TOTAL_ROUNDS)sc=3;
+    var sh='';for(var i=0;i<3;i++){var e=i<sc?' earned':'';var dl=i<sc?' style="animation-delay:'+i*.2+'s"':'';sh+='<span class="star'+e+'"'+dl+'>&#9733;</span>'}
+    $.certStars.innerHTML=sh;
+
+    $.certBadge.textContent=sc===3?'\ud83c\udfc6':sc===2?'\ud83c\udf1f':'\u2705';
+    $.certTitle.textContent=sc===3?'Exceptionnel !':sc===2?'Bien jou\u00e9 !':'Termin\u00e9 !';
+
+    /* Stats */
+    var ln=['','D\u00e9butant','Expert','L\u00e9gende'];
+    $.certStats.innerHTML=
+        '<div>Niveau : <span class="stat-hl">'+ln[S.level]+'</span></div>'+
+        '<div>Combo max : <span class="stat-hl">x'+S.maxCombo+'</span></div>'+
+        '<div>Perfect : <span class="stat-hl">'+S.perfectCount+'/'+TOTAL_ROUNDS+'</span></div>';
+
+    /* Chains recap */
+    var recap=$.chainsRecap;
+    /* Remove old chain cards but keep the title */
+    while(recap.children.length>1)recap.removeChild(recap.lastChild);
+
+    for(var r=0;r<S.roundResults.length;r++){
+        var res=S.roundResults[r];
+        var card=document.createElement('div');
+        card.className='mini-chain-card';
+        var status=document.createElement('span');
+        status.className='mini-chain-status';
+        status.textContent=res.perfect?'\u2b50':'\u2705';
+        card.appendChild(status);
+        var mc=buildMiniChain(res.chain);
+        card.appendChild(mc);
+        recap.appendChild(card);
+    }
+}
+
+function buildMiniChain(steps){
+    var container=document.createElement('div');
+    container.className='mini-chain';
+    for(var i=0;i<steps.length;i++){
+        if(i>0){
+            var eq=document.createElement('div');
+            eq.className='chain-eq';eq.textContent='=';
+            container.appendChild(eq);
+        }
+        var step=steps[i];
+        if(step.type==='frac'){
+            var frac=document.createElement('div');
+            frac.className='chain-frac'+(step.final?' irreducible':'');
+            frac.innerHTML='<div class="cf-num">'+step.num+'</div><div class="cf-bar"></div><div class="cf-den">'+step.den+'</div>';
+            container.appendChild(frac);
+        }else if(step.type==='decomp'){
+            var frac2=document.createElement('div');
+            frac2.className='chain-frac';
+            frac2.innerHTML=
+                '<div class="cf-num"><span class="cf-quot">'+step.qNum+'</span><span class="cf-times">&times;</span><span class="cf-factor struck">'+step.factor+'</span></div>'+
+                '<div class="cf-bar"></div>'+
+                '<div class="cf-den"><span class="cf-quot">'+step.qDen+'</span><span class="cf-times">&times;</span><span class="cf-factor struck">'+step.factor+'</span></div>';
+            container.appendChild(frac2);
+        }
+    }
+    return container;
+}
+
+function escHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 /* ========== HIGH SCORES ========== */
 function saveHS(lv,sc){try{var d=JSON.parse(localStorage.getItem('fs_hs')||'{}');if(!d[lv]||sc>d[lv]){d[lv]=sc;localStorage.setItem('fs_hs',JSON.stringify(d))}}catch(e){}}
@@ -775,28 +791,80 @@ function loadHS(){
     if(has)$.highScores.innerHTML='<div style="margin-bottom:3px;font-weight:700;color:var(--accent)">Meilleurs scores</div>'+h}catch(e){}
 }
 
+/* ========== STUDENT INFO (localStorage) ========== */
+function loadStudentInfo(){
+    try{
+        var info=JSON.parse(localStorage.getItem('fs_student')||'{}');
+        if(info.name)$.studentName.value=info.name;
+        if(info.classe)$.studentClass.value=info.classe;
+    }catch(e){}
+}
+function saveStudentInfo(){
+    try{localStorage.setItem('fs_student',JSON.stringify({name:S.studentName,classe:S.studentClass}))}catch(e){}
+}
+
 /* ========== EVENTS ========== */
 function bind(){
-    $.levelCards.forEach(function(c){c.addEventListener('click',function(){$.levelCards.forEach(function(x){x.classList.remove('selected')});c.classList.add('selected');S.level=parseInt(c.getAttribute('data-level'),10);SFX.click()})});
-    $.playBtn.addEventListener('click',function(){SFX.click();startGame()});
-    $.validateBtn.addEventListener('click',submitDivisor);
-    $.divisorInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitDivisor()}});
-    $.divisorInput.addEventListener('input',function(){clearHintTimer();clearHintState();startHintTimer()});
+    /* Level cards */
+    for(var i=0;i<$.levelCards.length;i++){
+        (function(c){
+            c.addEventListener('click',function(){
+                for(var j=0;j<$.levelCards.length;j++){$.levelCards[j].classList.remove('selected')}
+                c.classList.add('selected');
+                S.level=parseInt(c.getAttribute('data-level'),10);
+                SFX.click();
+            });
+        })($.levelCards[i]);
+    }
+
+    /* Play */
+    $.playBtn.addEventListener('click',function(){
+        S.studentName=$.studentName.value.trim();
+        S.studentClass=$.studentClass.value.trim();
+        saveStudentInfo();
+        SFX.click();startGame();
+    });
+
+    /* Numpad */
+    for(var k=0;k<$.numpadBtns.length;k++){
+        (function(btn){
+            btn.addEventListener('click',function(){
+                if(S.animating)return;
+                var digit=btn.getAttribute('data-digit');
+                var action=btn.getAttribute('data-action');
+                if(digit!==null){SFX.click();appendDigit(digit)}
+                else if(action==='clear'){SFX.click();clearDivisorInput()}
+                else if(action==='validate'){submitDivisor()}
+            });
+        })($.numpadBtns[k]);
+    }
+
+    /* Replay / Menu */
     $.replayBtn.addEventListener('click',function(){SFX.click();startGame()});
-    $.menuBtn.addEventListener('click',function(){SFX.click();showScreen('menuScreen');loadHS()});
+    $.menuBtn.addEventListener('click',function(){SFX.click();showScreen('welcomeScreen');loadHS()});
+
+    /* Help */
     $.helpBtn.addEventListener('click',function(){$.helpModal.classList.add('open')});
     $.closeHelp.addEventListener('click',function(){$.helpModal.classList.remove('open')});
     $.modalOverlay.addEventListener('click',function(){$.helpModal.classList.remove('open')});
+
+    /* Sound */
     $.soundBtn.addEventListener('click',function(){S.soundEnabled=!S.soundEnabled;$.soundIcon.innerHTML=S.soundEnabled?'&#128266;':'&#128264;'});
-    $.errorNoBtn.addEventListener('click',function(){answerError(false)});
-    $.errorYesBtn.addEventListener('click',function(){answerError(true)});
+
+    /* Keyboard fallback (for desktop testing) */
+    document.addEventListener('keydown',function(e){
+        if(!$.gameScreen.classList.contains('active')||S.animating)return;
+        if(e.key>='0'&&e.key<='9'){appendDigit(e.key);SFX.click()}
+        else if(e.key==='Enter'){e.preventDefault();submitDivisor()}
+        else if(e.key==='Backspace'||e.key==='Delete'){clearDivisorInput()}
+    });
 }
 
 /* ========== PWA ========== */
 function regSW(){if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js').catch(function(){})}
 
 /* ========== INIT ========== */
-document.addEventListener('DOMContentLoaded',function(){cacheDom();bind();loadHS();regSW()});
+document.addEventListener('DOMContentLoaded',function(){cacheDom();bind();loadStudentInfo();loadHS();regSW()});
 })();
 </script>
 </body>
