@@ -27,18 +27,22 @@
     box-sizing: border-box;
 }
 
-html, body {
+html {
     height: 100%;
+    height: 100dvh;
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
 }
 
 body {
+    height: 100%;
+    overflow: hidden;
     font-family: var(--font);
     background: var(--bg);
     color: var(--text);
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
 }
 
 button {
@@ -63,6 +67,8 @@ input {
     margin: 0 auto;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* --- Screen System --- */
@@ -87,11 +93,13 @@ input {
    MENU SCREEN
    ============================================================ */
 #menuScreen {
-    padding: 40px 24px 24px;
+    padding: 24px 20px;
     align-items: center;
     justify-content: center;
-    gap: 28px;
+    gap: 20px;
     background: linear-gradient(160deg, #0f0e17 0%, #1a1a2e 50%, #16213e 100%);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .menu-header {
@@ -99,7 +107,7 @@ input {
 }
 
 .title {
-    font-size: 3rem;
+    font-size: clamp(2rem, 8vw, 3rem);
     font-weight: 900;
     letter-spacing: 2px;
     line-height: 1.1;
@@ -139,9 +147,9 @@ input {
 .level-card {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     width: 100%;
-    padding: 14px 18px;
+    padding: 10px 14px;
     background: var(--bg-card);
     border: 2px solid transparent;
     border-radius: var(--radius);
@@ -163,12 +171,12 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: var(--bg-surface);
     font-weight: 800;
-    font-size: 1.1rem;
+    font-size: 1rem;
     flex-shrink: 0;
 }
 
@@ -194,11 +202,11 @@ input {
 /* --- Buttons --- */
 .btn-primary {
     width: 100%;
-    max-width: 280px;
-    padding: 16px 32px;
+    max-width: 260px;
+    padding: 14px 28px;
     background: var(--primary);
     color: var(--text);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 800;
     letter-spacing: 2px;
     border-radius: 50px;
@@ -213,8 +221,8 @@ input {
 
 .btn-secondary {
     width: 100%;
-    max-width: 280px;
-    padding: 14px 32px;
+    max-width: 260px;
+    padding: 12px 28px;
     background: var(--bg-card);
     color: var(--text-dim);
     font-size: 1rem;
@@ -361,8 +369,10 @@ input {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 16px 24px;
-    gap: 20px;
+    padding: 10px 16px;
+    gap: 12px;
+    min-height: 0;
+    overflow: hidden;
 }
 
 /* --- Feedback Zone --- */
@@ -416,7 +426,10 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 180px;
+    min-height: 120px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .fraction {
@@ -440,27 +453,28 @@ input {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: 4px 12px;
-    font-size: 3rem;
+    padding: 4px 8px;
+    font-size: clamp(2rem, 10vw, 3.2rem);
     font-weight: 800;
-    min-width: 80px;
+    min-width: 60px;
+    max-width: 90vw;
     white-space: nowrap;
     transition: all 0.3s ease;
 }
 
 .frac-bar {
     width: 100%;
-    height: 5px;
+    height: 4px;
     background: var(--text);
     border-radius: 3px;
-    margin: 6px 0;
-    min-width: 80px;
+    margin: 4px 0;
+    min-width: 60px;
     transition: width 0.3s ease;
 }
 
 /* Decomposed state: smaller font for the factor group */
 .frac-num.decomposed, .frac-den.decomposed {
-    font-size: 2.4rem;
+    font-size: clamp(1.4rem, 7vw, 2.4rem);
     gap: 2px;
 }
 
@@ -549,8 +563,8 @@ input {
 
 .divisor-input {
     flex: 1;
-    padding: 14px 18px;
-    font-size: 1.5rem;
+    padding: 12px 14px;
+    font-size: 1.3rem;
     font-weight: 700;
     text-align: center;
     background: var(--bg-card);
@@ -559,6 +573,7 @@ input {
     border-radius: var(--radius);
     transition: border-color 0.2s;
     -moz-appearance: textfield;
+    max-width: 100%;
 }
 
 .divisor-input::-webkit-inner-spin-button,
@@ -584,12 +599,12 @@ input {
 }
 
 .btn-validate {
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     border-radius: var(--radius);
     background: var(--primary);
     color: var(--text);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     flex-shrink: 0;
     display: flex;
@@ -613,8 +628,8 @@ input {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 14px 16px;
+    gap: 6px;
+    padding: 10px 16px;
     flex-shrink: 0;
 }
 
@@ -669,9 +684,11 @@ input {
 #resultScreen {
     align-items: center;
     justify-content: center;
-    gap: 20px;
-    padding: 32px 24px;
+    gap: 16px;
+    padding: 24px 20px;
     background: linear-gradient(160deg, #0f0e17 0%, #1a1a2e 60%, #16213e 100%);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .result-title {
@@ -852,21 +869,139 @@ input {
 /* ============================================================
    RESPONSIVE ADJUSTMENTS
    ============================================================ */
-@media (max-height: 640px) {
-    .frac-num, .frac-den {
-        font-size: 2.4rem;
-    }
-    .frac-num.decomposed, .frac-den.decomposed {
-        font-size: 1.8rem;
-    }
-    .fraction-zone {
-        min-height: 140px;
+
+/* Very small phones (iPhone SE, Galaxy S, etc.) */
+@media (max-height: 600px) {
+    #menuScreen {
+        padding: 16px 16px;
+        gap: 12px;
     }
     .title {
-        font-size: 2.4rem;
+        font-size: 1.8rem;
+    }
+    .subtitle {
+        font-size: 0.85rem;
+    }
+    .section-title {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+    .level-card {
+        padding: 8px 12px;
+    }
+    .level-badge {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+    .level-name {
+        font-size: 0.85rem;
+    }
+    .level-desc {
+        font-size: 0.7rem;
+    }
+    .btn-primary {
+        padding: 12px 24px;
+        font-size: 1rem;
+    }
+    .game-body {
+        padding: 6px 12px;
+        gap: 8px;
+    }
+    .fraction-zone {
+        min-height: 90px;
+    }
+    .frac-num, .frac-den {
+        font-size: clamp(1.6rem, 8vw, 2.4rem);
+        padding: 2px 6px;
+    }
+    .frac-num.decomposed, .frac-den.decomposed {
+        font-size: clamp(1.1rem, 5.5vw, 1.8rem);
+    }
+    .frac-bar {
+        margin: 2px 0;
+        height: 3px;
+    }
+    .input-zone {
+        max-width: 220px;
+    }
+    .divisor-input {
+        padding: 10px 12px;
+        font-size: 1.1rem;
+    }
+    .btn-validate {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+    .progress-bar {
+        padding: 6px 12px;
+        gap: 5px;
+    }
+    .progress-dot {
+        width: 8px;
+        height: 8px;
+    }
+    .btn-help {
+        bottom: 42px;
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+    .feedback {
+        font-size: 0.85rem;
+    }
+    .feedback.perfect {
+        font-size: 1.1rem;
+    }
+    .result-score-value {
+        font-size: 2.2rem;
+    }
+    .result-stars {
+        font-size: 2rem;
     }
 }
 
+/* Short but wide (landscape phones) */
+@media (max-height: 500px) and (orientation: landscape) {
+    .game-body {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 4px 12px;
+        justify-content: space-evenly;
+    }
+    .fraction-zone {
+        min-height: auto;
+        flex: 1;
+    }
+    .input-zone {
+        flex: 1;
+    }
+    .feedback-zone {
+        width: 100%;
+        min-height: 24px;
+    }
+    .frac-num, .frac-den {
+        font-size: 1.6rem;
+    }
+    .frac-num.decomposed, .frac-den.decomposed {
+        font-size: 1.2rem;
+    }
+    #menuScreen {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+    }
+    .level-selector {
+        max-width: 50%;
+    }
+}
+
+/* Wider screens */
 @media (min-width: 480px) {
     .level-cards {
         flex-direction: row;
@@ -875,30 +1010,7 @@ input {
     .level-card {
         flex-direction: column;
         text-align: center;
-        padding: 16px 12px;
-    }
-}
-
-/* Landscape phones */
-@media (max-height: 500px) and (orientation: landscape) {
-    .game-body {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 8px 16px;
-    }
-    .fraction-zone {
-        min-height: auto;
-    }
-    .frac-num, .frac-den {
-        font-size: 2rem;
-    }
-}
-
-/* Large screens */
-@media (min-height: 800px) {
-    .frac-num, .frac-den {
-        font-size: 3.5rem;
+        padding: 14px 10px;
     }
 }
 
