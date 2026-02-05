@@ -2,162 +2,798 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f0e17">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="theme-color" content="#0b0b1f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="Frac-Strike - Maîtrise la simplification de fractions !">
+    <meta name="description" content="Frac-Strike — Simplifie les fractions !">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-    <link rel="apple-touch-icon" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <title>Frac-Strike</title>
-    <link rel="stylesheet" href="style.css">
+<style>
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+    --bg:        #0b0b1f;
+    --bg-card:   #151530;
+    --bg-surface:#1e1e42;
+    --primary:   #4361ee;
+    --success:   #06d6a0;
+    --accent:    #ff9f1c;
+    --error:     #ef476f;
+    --text:      #f0f0f8;
+    --text-dim:  #8888aa;
+    --radius:    12px;
+    --radius-lg: 20px;
+    --font:      'Montserrat','Segoe UI',system-ui,sans-serif;
+}
+/* ============================================================
+   RESET
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{height:100%;height:100dvh;overflow:hidden;-webkit-tap-highlight-color:transparent}
+body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.4;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button{font-family:var(--font);cursor:pointer;border:none;outline:none;-webkit-tap-highlight-color:transparent}
+input{font-family:var(--font);outline:none;border:none}
+
+/* ============================================================
+   APP CONTAINER & SCREENS
+   ============================================================ */
+#app{width:100%;height:100%;max-width:480px;margin:0 auto;position:relative;overflow:hidden}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateY(16px);transition:opacity .35s,transform .35s}
+.screen.active{opacity:1;pointer-events:auto;transform:translateY(0)}
+
+/* ============================================================
+   MENU SCREEN
+   ============================================================ */
+#menuScreen{padding:20px;align-items:center;justify-content:center;gap:18px;background:linear-gradient(160deg,#0b0b1f,#151530 50%,#1e1e42);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.menu-header{text-align:center}
+.title{font-size:clamp(2rem,9vw,3rem);font-weight:900;letter-spacing:2px;line-height:1.1}
+.accent{color:var(--accent)}
+.subtitle{font-size:.95rem;color:var(--text-dim);margin-top:4px}
+.section-title{font-size:.85rem;font-weight:600;color:var(--text-dim);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.level-selector{width:100%}
+.level-cards{display:flex;flex-direction:column;gap:8px}
+.level-card{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius);color:var(--text);text-align:left;transition:border-color .2s,background .2s,transform .12s}
+.level-card:active{transform:scale(.97)}
+.level-card.selected{border-color:var(--primary);background:rgba(67,97,238,.1)}
+.level-badge{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--bg-surface);font-weight:800;font-size:1rem;flex-shrink:0}
+.level-card.selected .level-badge{background:var(--primary)}
+.level-name{font-weight:700;font-size:.95rem;display:block}
+.level-desc{font-size:.75rem;color:var(--text-dim);display:block}
+
+/* --- Buttons --- */
+.btn-primary{width:100%;max-width:260px;padding:14px 28px;background:var(--primary);color:var(--text);font-size:1.1rem;font-weight:800;letter-spacing:2px;border-radius:50px;box-shadow:0 4px 20px rgba(67,97,238,.4);transition:transform .12s,box-shadow .12s}
+.btn-primary:active{transform:scale(.95);box-shadow:0 2px 10px rgba(67,97,238,.3)}
+.btn-secondary{width:100%;max-width:260px;padding:12px 28px;background:var(--bg-card);color:var(--text-dim);font-size:.95rem;font-weight:700;letter-spacing:1px;border-radius:50px;border:2px solid var(--bg-surface);transition:transform .12s}
+.btn-secondary:active{transform:scale(.95)}
+.high-scores{font-size:.8rem;color:var(--text-dim);text-align:center}
+.high-scores .hs-value{color:var(--accent);font-weight:700}
+
+/* ============================================================
+   GAME SCREEN
+   ============================================================ */
+#gameScreen{background:var(--bg)}
+.game-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-card);border-bottom:1px solid rgba(255,255,255,.04);flex-shrink:0}
+.header-left,.header-right{display:flex;align-items:center;gap:5px}
+.score-label{font-size:.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.score-value{font-size:1.2rem;font-weight:800;color:var(--accent);min-width:36px;transition:transform .2s}
+.score-value.bump{animation:bump .3s ease}
+@keyframes bump{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.combo-badge{padding:3px 12px;border-radius:20px;background:var(--bg-surface);font-weight:800;font-size:.9rem;color:var(--text-dim);transition:background .3s,color .3s,transform .2s}
+.combo-badge.hot{background:var(--primary);color:var(--text);animation:pulse-glow .5s ease}
+.combo-badge.fire{background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--text);animation:pulse-glow .5s ease}
+@keyframes pulse-glow{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.round-total{color:var(--text-dim);font-size:.8rem}
+#roundValue{font-weight:700;font-size:.95rem}
+.btn-icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:none;color:var(--text-dim);font-size:1rem;border-radius:50%;margin-left:2px}
+
+/* --- Game Body --- */
+.game-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 14px;gap:10px;min-height:0;overflow:hidden}
+
+/* --- Feedback --- */
+.feedback-zone{min-height:32px;display:flex;align-items:center;justify-content:center;width:100%;padding:0 8px}
+.feedback{font-size:.9rem;font-weight:700;text-align:center;opacity:0;transform:translateY(-6px);transition:opacity .25s,transform .25s;max-width:100%;word-wrap:break-word}
+.feedback.visible{opacity:1;transform:translateY(0)}
+.feedback.error{color:var(--error)}
+.feedback.success{color:var(--success)}
+.feedback.perfect{color:var(--accent);font-size:1.2rem;animation:perfect-pop .45s ease}
+@keyframes perfect-pop{0%{transform:scale(.5) translateY(-6px);opacity:0}60%{transform:scale(1.15) translateY(0);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
+.feedback.info{color:var(--primary)}
+.feedback.hint{color:var(--accent);font-style:italic}
+
+/* ============================================================
+   FRACTION ZONE
+   ============================================================ */
+.fraction-zone{display:flex;align-items:center;justify-content:center;min-height:110px;width:100%;overflow:hidden}
+.fraction{display:inline-flex;flex-direction:column;align-items:center;transition:transform .3s}
+.fraction.entrance{animation:frac-in .35s ease-out}
+@keyframes frac-in{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.frac-num,.frac-den{display:flex;align-items:center;justify-content:center;gap:3px;padding:3px 8px;font-size:clamp(1.8rem,9vw,3rem);font-weight:800;min-width:50px;max-width:88vw;white-space:nowrap;transition:font-size .3s,gap .3s}
+.frac-bar{width:100%;height:4px;background:var(--text);border-radius:3px;margin:3px 0;min-width:50px;transition:width .3s}
+.frac-num.decomposed,.frac-den.decomposed{font-size:clamp(1.3rem,6.5vw,2.2rem);gap:2px}
+
+/* Factor group */
+.factor-group{position:relative;display:inline-flex;align-items:center;transition:opacity .3s,transform .3s}
+.factor-group .factor{color:var(--error);font-weight:900}
+.factor-group .times{margin:0 2px;color:var(--text-dim);font-size:.85em}
+
+/* Diagonal strike animation */
+.factor-group.struck::after{content:'';position:absolute;top:50%;left:-6%;width:112%;height:4px;background:var(--error);border-radius:2px;transform-origin:left center;animation:strike-oblique .35s ease-out forwards}
+@keyframes strike-oblique{from{transform:translateY(-50%) rotate(-25deg) scaleX(0)}to{transform:translateY(-50%) rotate(-25deg) scaleX(1)}}
+.factor-group.fade-out{opacity:0;transform:scale(.35)}
+.quotient{transition:all .3s}
+.fraction.result-highlight{animation:result-pop .35s ease}
+@keyframes result-pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+/* Digit blink for hints */
+.digit-blink{color:var(--accent);animation:digit-pulse .7s ease-in-out infinite}
+@keyframes digit-pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* Hint glow on fraction */
+.fraction.hint-active .frac-num,.fraction.hint-active .frac-den{text-shadow:0 0 10px rgba(255,159,28,.4)}
+
+/* ============================================================
+   INPUT ZONE (normal mode)
+   ============================================================ */
+.input-zone{width:100%;max-width:240px;text-align:center}
+.input-label{display:block;font-size:.8rem;color:var(--text-dim);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.input-row{display:flex;gap:8px;align-items:center}
+.divisor-input{flex:1;padding:11px 12px;font-size:1.3rem;font-weight:700;text-align:center;background:var(--bg-card);color:var(--text);border:2px solid var(--bg-surface);border-radius:var(--radius);transition:border-color .2s;-moz-appearance:textfield;max-width:100%}
+.divisor-input::-webkit-inner-spin-button,.divisor-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.divisor-input:focus{border-color:var(--primary)}
+.divisor-input.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.btn-validate{width:50px;height:50px;border-radius:var(--radius);background:var(--primary);color:var(--text);font-size:1.3rem;font-weight:700;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(67,97,238,.35);transition:transform .12s}
+.btn-validate:active{transform:scale(.9)}
+.btn-validate:disabled{opacity:.35;pointer-events:none}
+
+/* ============================================================
+   ERROR MODE (within game screen)
+   ============================================================ */
+.error-zone{width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.error-prompt{font-size:.85rem;color:var(--text-dim);font-weight:600}
+.error-fractions{display:flex;align-items:center;justify-content:center;gap:14px}
+.error-arrow{font-size:1.8rem;color:var(--text-dim);font-weight:300}
+.error-fraction{display:inline-flex;flex-direction:column;align-items:center}
+.error-fraction .ef-num,.error-fraction .ef-den{font-size:clamp(1.5rem,7vw,2.2rem);font-weight:800;padding:2px 6px}
+.error-fraction .ef-bar{width:100%;height:3px;background:var(--text);border-radius:2px;margin:2px 0;min-width:30px}
+.error-fraction.wrong{color:var(--error)}
+.error-method{font-size:.85rem;color:var(--text-dim);font-style:italic;padding:4px 0}
+.error-question{font-size:1rem;font-weight:700;margin-top:2px}
+.error-buttons{display:flex;gap:14px;margin-top:4px}
+.btn-error{padding:12px 28px;border-radius:50px;font-size:1rem;font-weight:800;letter-spacing:1px;transition:transform .12s}
+.btn-error:active{transform:scale(.93)}
+.btn-error-no{background:var(--error);color:var(--text);box-shadow:0 3px 12px rgba(239,71,111,.3)}
+.btn-error-yes{background:var(--success);color:#0b0b1f;box-shadow:0 3px 12px rgba(6,214,160,.3)}
+.error-result{font-size:.9rem;color:var(--text-dim);line-height:1.5;max-width:300px;padding:6px 0}
+.error-result strong{color:var(--text)}
+.error-correct-fraction{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px}
+.error-correct-fraction span{font-weight:800;font-size:1.1rem}
+.error-correct-fraction .ecf-bar{width:100%;height:2px;background:var(--success);margin:1px 0}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress-bar{display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;flex-shrink:0}
+.progress-dot{width:9px;height:9px;border-radius:50%;background:var(--bg-surface);transition:background .3s,transform .3s}
+.progress-dot.done{background:var(--success)}
+.progress-dot.perfect-dot{background:var(--accent)}
+.progress-dot.error-dot{background:var(--primary)}
+.progress-dot.current{background:var(--primary);transform:scale(1.35)}
+
+/* --- Help FAB --- */
+.btn-help{position:absolute;bottom:46px;right:14px;width:42px;height:42px;border-radius:50%;background:var(--bg-surface);color:var(--accent);font-size:1.2rem;font-weight:800;box-shadow:0 3px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:10;transition:transform .12s}
+.btn-help:active{transform:scale(.9)}
+
+/* ============================================================
+   RESULT SCREEN
+   ============================================================ */
+#resultScreen{align-items:center;justify-content:center;gap:14px;padding:20px;background:linear-gradient(160deg,#0b0b1f,#151530 60%,#1e1e42);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.result-title{font-size:1.8rem;font-weight:900}
+.result-stars{display:flex;gap:10px;font-size:2.2rem}
+.result-stars .star{opacity:.18;filter:grayscale(1);transition:opacity .4s,transform .4s}
+.result-stars .star.earned{opacity:1;filter:grayscale(0);animation:star-in .45s ease backwards}
+@keyframes star-in{from{transform:scale(0) rotate(-25deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.result-score-block{text-align:center}
+.result-score-label{display:block;font-size:.8rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.result-score-value{font-size:2.6rem;font-weight:900;color:var(--accent)}
+.result-stats{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--text-dim);text-align:center}
+.result-stats .stat-highlight{color:var(--success);font-weight:700}
+.result-actions{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px;width:100%}
+
+/* ============================================================
+   HELP MODAL
+   ============================================================ */
+.modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal.open{opacity:1;pointer-events:auto}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7)}
+.modal-content{position:relative;width:90%;max-width:380px;max-height:82vh;overflow-y:auto;background:var(--bg-card);border-radius:var(--radius-lg);padding:24px 18px;box-shadow:0 10px 35px rgba(0,0,0,.5);transform:translateY(16px);transition:transform .25s}
+.modal.open .modal-content{transform:translateY(0)}
+.modal-close{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:var(--bg-surface);color:var(--text-dim);font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.modal-title{font-size:1.05rem;font-weight:800;margin-bottom:14px;text-align:center}
+.rules-grid{display:flex;flex-direction:column;gap:8px}
+.rule-bubble{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius);background:rgba(255,255,255,.03)}
+.rule-divisor{font-size:1.2rem;font-weight:900;min-width:44px;text-align:center;flex-shrink:0}
+.rule-text{font-size:.8rem;color:var(--text-dim);line-height:1.35}
+.rule-text strong{color:var(--text)}
+.color-blue .rule-divisor{color:#4361ee}
+.color-green .rule-divisor{color:#06d6a0}
+.color-orange .rule-divisor{color:#ff9f1c}
+.color-purple .rule-divisor{color:#b388ff}
+.color-red .rule-divisor{color:#ef476f}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-height:600px){
+    #menuScreen{padding:14px;gap:10px}
+    .title{font-size:1.7rem}
+    .subtitle{font-size:.8rem}
+    .section-title{font-size:.75rem;margin-bottom:5px}
+    .level-card{padding:7px 10px}
+    .level-badge{width:28px;height:28px;font-size:.8rem}
+    .level-name{font-size:.8rem}
+    .level-desc{font-size:.65rem}
+    .btn-primary{padding:11px 20px;font-size:.95rem}
+    .game-body{padding:4px 10px;gap:6px}
+    .fraction-zone{min-height:80px}
+    .frac-num,.frac-den{font-size:clamp(1.4rem,7vw,2.2rem);padding:2px 5px}
+    .frac-num.decomposed,.frac-den.decomposed{font-size:clamp(1rem,5vw,1.6rem)}
+    .frac-bar{margin:2px 0;height:3px}
+    .input-zone{max-width:210px}
+    .divisor-input{padding:9px 10px;font-size:1.1rem}
+    .btn-validate{width:42px;height:42px;font-size:1rem}
+    .progress-bar{padding:5px 10px;gap:4px}
+    .progress-dot{width:7px;height:7px}
+    .btn-help{bottom:36px;width:36px;height:36px;font-size:.95rem}
+    .feedback{font-size:.8rem}
+    .feedback.perfect{font-size:1rem}
+    .result-score-value{font-size:2rem}
+    .result-stars{font-size:1.8rem}
+    .error-fraction .ef-num,.error-fraction .ef-den{font-size:clamp(1.2rem,5.5vw,1.7rem)}
+}
+@media(max-height:500px) and (orientation:landscape){
+    .game-body{flex-direction:row;flex-wrap:wrap;gap:6px;padding:4px 10px;justify-content:space-evenly}
+    .fraction-zone{min-height:auto;flex:1}
+    .input-zone{flex:1}
+    .feedback-zone{width:100%;min-height:22px}
+    .frac-num,.frac-den{font-size:1.4rem}
+}
+@media(min-width:480px){
+    .level-cards{flex-direction:row;gap:8px}
+    .level-card{flex-direction:column;text-align:center;padding:12px 8px}
+}
+
+.hidden{display:none!important}
+</style>
 </head>
 <body>
-    <div id="app">
+<div id="app">
 
-        <!-- ==================== MENU SCREEN ==================== -->
-        <div id="menuScreen" class="screen active">
-            <div class="menu-header">
-                <h1 class="title">FRAC<span class="accent">—</span>STRIKE</h1>
-                <p class="subtitle">Simplifie les fractions !</p>
+    <!-- ==================== MENU ==================== -->
+    <div id="menuScreen" class="screen active">
+        <div class="menu-header">
+            <h1 class="title">FRAC<span class="accent">&mdash;</span>STRIKE</h1>
+            <p class="subtitle">Simplifie les fractions !</p>
+        </div>
+        <div class="level-selector">
+            <h2 class="section-title">Choisis ton niveau</h2>
+            <div class="level-cards">
+                <button class="level-card selected" data-level="1">
+                    <span class="level-badge">1</span>
+                    <span><span class="level-name">D&eacute;butant</span><span class="level-desc">Tables de 2 &agrave; 10</span></span>
+                </button>
+                <button class="level-card" data-level="2">
+                    <span class="level-badge">2</span>
+                    <span><span class="level-name">Expert</span><span class="level-desc">Multiples de 10, 25, 50</span></span>
+                </button>
+                <button class="level-card" data-level="3">
+                    <span class="level-badge">3</span>
+                    <span><span class="level-name">L&eacute;gende</span><span class="level-desc">Nombres jusqu&rsquo;&agrave; 200</span></span>
+                </button>
             </div>
+        </div>
+        <button id="playBtn" class="btn-primary">JOUER</button>
+        <div class="high-scores" id="highScores"></div>
+    </div>
 
-            <div class="level-selector">
-                <h2 class="section-title">Choisis ton niveau</h2>
-                <div class="level-cards">
-                    <button class="level-card selected" data-level="1">
-                        <span class="level-badge">1</span>
-                        <span class="level-name">Débutant</span>
-                        <span class="level-desc">Tables de 2 à 10</span>
-                    </button>
-                    <button class="level-card" data-level="2">
-                        <span class="level-badge">2</span>
-                        <span class="level-name">Expert</span>
-                        <span class="level-desc">Multiples de 10, 25, 50</span>
-                    </button>
-                    <button class="level-card" data-level="3">
-                        <span class="level-badge">3</span>
-                        <span class="level-name">Légende</span>
-                        <span class="level-desc">Nombres jusqu'à 200</span>
-                    </button>
-                </div>
+    <!-- ==================== GAME ==================== -->
+    <div id="gameScreen" class="screen">
+        <div class="game-header">
+            <div class="header-left">
+                <span class="score-label">Score</span>
+                <span class="score-value" id="scoreValue">0</span>
             </div>
-
-            <button id="playBtn" class="btn-primary">JOUER</button>
-
-            <div class="high-scores" id="highScores"></div>
+            <div class="header-center">
+                <div class="combo-badge" id="comboBadge"><span id="comboValue">x1</span></div>
+            </div>
+            <div class="header-right">
+                <span id="roundValue">1</span><span class="round-total">/10</span>
+                <button id="soundBtn" class="btn-icon" title="Son"><span id="soundIcon">&#128266;</span></button>
+            </div>
         </div>
 
-        <!-- ==================== GAME SCREEN ==================== -->
-        <div id="gameScreen" class="screen">
-            <div class="game-header">
-                <div class="header-left">
-                    <span class="score-label">Score</span>
-                    <span class="score-value" id="scoreValue">0</span>
-                </div>
-                <div class="header-center">
-                    <div class="combo-badge" id="comboBadge">
-                        <span id="comboValue">x1</span>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <span id="roundValue">1</span><span class="round-total">/10</span>
-                    <button id="soundBtn" class="btn-icon" title="Son">
-                        <span id="soundIcon">&#128266;</span>
-                    </button>
-                </div>
-            </div>
+        <div class="game-body">
+            <div class="feedback-zone"><div class="feedback" id="feedback"></div></div>
 
-            <div class="game-body">
-                <!-- Feedback area -->
-                <div class="feedback-zone">
-                    <div class="feedback" id="feedback"></div>
-                </div>
-
-                <!-- Fraction display -->
-                <div class="fraction-zone" id="fractionZone">
+            <!-- Normal Mode -->
+            <div id="normalMode">
+                <div class="fraction-zone">
                     <div class="fraction" id="fraction">
-                        <div class="frac-num" id="fracNum">
-                            <span class="num-val">18</span>
-                        </div>
+                        <div class="frac-num" id="fracNum"><span>18</span></div>
                         <div class="frac-bar"></div>
-                        <div class="frac-den" id="fracDen">
-                            <span class="den-val">24</span>
-                        </div>
+                        <div class="frac-den" id="fracDen"><span>24</span></div>
                     </div>
                 </div>
-
-                <!-- Input area -->
                 <div class="input-zone" id="inputZone">
                     <label class="input-label" for="divisorInput">Divise par :</label>
                     <div class="input-row">
-                        <input type="number" id="divisorInput" class="divisor-input"
-                               min="2" inputmode="numeric" pattern="[0-9]*"
-                               placeholder="?" autocomplete="off">
+                        <input type="number" id="divisorInput" class="divisor-input" min="2" inputmode="numeric" pattern="[0-9]*" placeholder="?" autocomplete="off">
                         <button id="validateBtn" class="btn-validate" aria-label="Valider">&#10003;</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Progress dots -->
-            <div class="progress-bar" id="progressBar"></div>
-
-            <!-- Help FAB -->
-            <button id="helpBtn" class="btn-help" aria-label="Aide">?</button>
-        </div>
-
-        <!-- ==================== RESULT SCREEN ==================== -->
-        <div id="resultScreen" class="screen">
-            <h2 class="result-title" id="resultTitle">Terminé !</h2>
-            <div class="result-stars" id="resultStars"></div>
-            <div class="result-score-block">
-                <span class="result-score-label">Score final</span>
-                <span class="result-score-value" id="finalScore">0</span>
-            </div>
-            <div class="result-stats" id="resultStats"></div>
-            <div class="result-actions">
-                <button id="replayBtn" class="btn-primary">REJOUER</button>
-                <button id="menuBtn" class="btn-secondary">MENU</button>
-            </div>
-        </div>
-
-        <!-- ==================== HELP MODAL ==================== -->
-        <div id="helpModal" class="modal">
-            <div class="modal-overlay"></div>
-            <div class="modal-content">
-                <button class="modal-close" id="closeHelp" aria-label="Fermer">&#10005;</button>
-                <h2 class="modal-title">Critères de divisibilité</h2>
-                <div class="rules-grid">
-                    <div class="rule-bubble color-blue">
-                        <div class="rule-divisor">÷ 2</div>
-                        <div class="rule-text">Le dernier chiffre est <strong>pair</strong><br>(0, 2, 4, 6, 8)</div>
+            <!-- Error Mode -->
+            <div id="errorMode" class="hidden">
+                <div class="error-zone" id="errorZone">
+                    <div class="error-prompt">Un &eacute;l&egrave;ve a simplifi&eacute; :</div>
+                    <div class="error-fractions">
+                        <div class="error-fraction" id="errOriginal">
+                            <span class="ef-num"></span><div class="ef-bar"></div><span class="ef-den"></span>
+                        </div>
+                        <div class="error-arrow">&rarr;</div>
+                        <div class="error-fraction wrong" id="errWrong">
+                            <span class="ef-num"></span><div class="ef-bar"></div><span class="ef-den"></span>
+                        </div>
                     </div>
-                    <div class="rule-bubble color-green">
-                        <div class="rule-divisor">÷ 3</div>
-                        <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 3</div>
+                    <div class="error-method" id="errMethod"></div>
+                    <div class="error-question">Est-ce correct ?</div>
+                    <div class="error-buttons">
+                        <button class="btn-error btn-error-no" id="errorNoBtn">NON</button>
+                        <button class="btn-error btn-error-yes" id="errorYesBtn">OUI</button>
                     </div>
-                    <div class="rule-bubble color-orange">
-                        <div class="rule-divisor">÷ 5</div>
-                        <div class="rule-text">Le dernier chiffre est <strong>0</strong> ou <strong>5</strong></div>
-                    </div>
-                    <div class="rule-bubble color-purple">
-                        <div class="rule-divisor">÷ 9</div>
-                        <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 9</div>
-                    </div>
-                    <div class="rule-bubble color-red">
-                        <div class="rule-divisor">÷ 10</div>
-                        <div class="rule-text">Le dernier chiffre est <strong>0</strong></div>
-                    </div>
+                </div>
+                <!-- Error feedback replaces error-zone -->
+                <div class="error-zone hidden" id="errorFeedbackZone">
+                    <div class="error-result" id="errorResultText"></div>
                 </div>
             </div>
         </div>
 
+        <div class="progress-bar" id="progressBar"></div>
+        <button id="helpBtn" class="btn-help" aria-label="Aide">?</button>
     </div>
 
-    <script src="app.js"></script>
+    <!-- ==================== RESULT ==================== -->
+    <div id="resultScreen" class="screen">
+        <h2 class="result-title" id="resultTitle">Termin&eacute; !</h2>
+        <div class="result-stars" id="resultStars"></div>
+        <div class="result-score-block">
+            <span class="result-score-label">Score final</span>
+            <span class="result-score-value" id="finalScore">0</span>
+        </div>
+        <div class="result-stats" id="resultStats"></div>
+        <div class="result-actions">
+            <button id="replayBtn" class="btn-primary">REJOUER</button>
+            <button id="menuBtn" class="btn-secondary">MENU</button>
+        </div>
+    </div>
+
+    <!-- ==================== HELP MODAL ==================== -->
+    <div id="helpModal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="closeHelp" aria-label="Fermer">&#10005;</button>
+            <h2 class="modal-title">Crit&egrave;res de divisibilit&eacute;</h2>
+            <div class="rules-grid">
+                <div class="rule-bubble color-blue">
+                    <div class="rule-divisor">&divide; 2</div>
+                    <div class="rule-text">Le dernier chiffre est <strong>pair</strong> (0, 2, 4, 6, 8)</div>
+                </div>
+                <div class="rule-bubble color-green">
+                    <div class="rule-divisor">&divide; 3</div>
+                    <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 3</div>
+                </div>
+                <div class="rule-bubble color-orange">
+                    <div class="rule-divisor">&divide; 5</div>
+                    <div class="rule-text">Le dernier chiffre est <strong>0</strong> ou <strong>5</strong></div>
+                </div>
+                <div class="rule-bubble color-purple">
+                    <div class="rule-divisor">&divide; 9</div>
+                    <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 9</div>
+                </div>
+                <div class="rule-bubble color-red">
+                    <div class="rule-divisor">&divide; 10</div>
+                    <div class="rule-text">Le dernier chiffre est <strong>0</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ============================================================
+   FRAC-STRIKE — Game Engine
+   ============================================================ */
+(function(){
+'use strict';
+
+/* ========== CONFIG ========== */
+var TOTAL_ROUNDS=10;
+var HINT_DELAY=8000;
+var ANIM={STRIKE:650,FADE:450,RESULT:400,NEXT:1300};
+var ERROR_ROUNDS_COUNT=2;
+
+/* ========== STATE ========== */
+var S={
+    level:1,score:0,combo:0,maxCombo:0,
+    round:0,steps:0,perfectCount:0,
+    currentNum:0,currentDen:0,originalGCD:0,
+    animating:false,soundEnabled:true,
+    roundResults:[],errorRounds:[],
+    hintTimer:null,isErrorRound:false,
+    currentError:null
+};
+
+/* ========== DOM ========== */
+var $={};
+function cacheDom(){
+    var ids=['menuScreen','gameScreen','resultScreen','playBtn','replayBtn',
+        'menuBtn','fracNum','fracDen','fraction','divisorInput','validateBtn',
+        'inputZone','normalMode','errorMode','errorZone','errorFeedbackZone',
+        'errOriginal','errWrong','errMethod','errorResultText','errorNoBtn','errorYesBtn',
+        'feedback','scoreValue','comboValue','comboBadge','roundValue','progressBar',
+        'helpBtn','helpModal','closeHelp','soundBtn','soundIcon',
+        'resultTitle','resultStars','finalScore','resultStats','highScores'];
+    ids.forEach(function(id){$[id]=document.getElementById(id)});
+    $.levelCards=document.querySelectorAll('.level-card');
+    $.modalOverlay=$.helpModal.querySelector('.modal-overlay');
+}
+
+/* ========== AUDIO ========== */
+var SFX=(function(){
+    var ctx;
+    function gc(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}
+    function t(f,d,ty,v){if(!S.soundEnabled)return;try{var c=gc(),o=c.createOscillator(),g=c.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+d)}catch(e){}}
+    return{
+        click:function(){t(800,.04,'square',.07)},
+        success:function(){t(523,.12);setTimeout(function(){t(659,.12)},80);setTimeout(function(){t(784,.16)},160)},
+        perfect:function(){t(523,.1);setTimeout(function(){t(659,.1)},70);setTimeout(function(){t(784,.1)},140);setTimeout(function(){t(1047,.22)},210)},
+        error:function(){t(220,.22,'sawtooth',.1)},
+        strike:function(){t(380,.12,'triangle',.08)},
+        levelUp:function(){[523,587,659,784,1047].forEach(function(f,i){setTimeout(function(){t(f,.1)},i*70)})}
+    }
+})();
+
+/* ========== MATH ========== */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%t;a=t}return a}
+function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function digitSum(n){var s=0;n=Math.abs(n);while(n){s+=n%10;n=Math.floor(n/10)}return s}
+
+function generateFraction(level){
+    var tn,td,f,att=0;
+    switch(level){
+        case 1:
+            do{tn=randInt(1,9);td=randInt(2,10)}while(tn>=td||gcd(tn,td)!==1);
+            f=randInt(2,Math.min(10,Math.floor(99/td)));break;
+        case 2:
+            do{tn=randInt(1,5);td=randInt(2,8)}while(tn>=td||gcd(tn,td)!==1);
+            f=[10,25,50][randInt(0,2)];break;
+        case 3:
+            do{tn=randInt(2,12);td=randInt(3,18);att++}while((tn>=td||gcd(tn,td)!==1)&&att<200);
+            if(tn>=td||gcd(tn,td)!==1){tn=3;td=7}
+            f=randInt(2,Math.min(15,Math.floor(200/td)));break;
+        default:tn=1;td=2;f=2;
+    }
+    return{num:tn*f,den:td*f,targetNum:tn,targetDen:td,pgcd:f}
+}
+
+/* ========== ERROR MODE GENERATION ========== */
+function generateErrorQuestion(level){
+    var fr=generateFraction(level);
+    var n=fr.num,d=fr.den,g=fr.pgcd,cn=fr.targetNum,cd=fr.targetDen;
+    var showCorrect=Math.random()<.2;
+    if(showCorrect){
+        return{originalNum:n,originalDen:d,shownNum:cn,shownDen:cd,
+            correctNum:cn,correctDen:cd,pgcd:g,isCorrect:true,
+            methodText:'"J\'ai divis\u00e9 par '+g+' en haut et en bas"',
+            explanation:'Cet \u00e9l\u00e8ve a bien simplifi\u00e9 ! On divise le num\u00e9rateur et le d\u00e9nominateur par '+g+'.'}
+    }
+    var errType=Math.random()<.6?'subtract':'oneSided';
+    var wn,wd,mt,expl;
+    if(errType==='subtract'){
+        wn=n-g;wd=d-g;
+        if(wn<=0||wd<=0||(wn===cn&&wd===cd)){errType='oneSided'}
+        else{mt='"J\'ai soustrait '+g+' en haut et en bas"';expl='Pour simplifier, on <strong>divise</strong> le num\u00e9rateur et le d\u00e9nominateur par le m\u00eame nombre. On ne soustrait pas !'}
+    }
+    if(errType==='oneSided'){
+        if(Math.random()<.5){wn=cn;wd=d;mt='"J\'ai divis\u00e9 seulement le num\u00e9rateur par '+g+'"'}
+        else{wn=n;wd=cd;mt='"J\'ai divis\u00e9 seulement le d\u00e9nominateur par '+g+'"'}
+        expl='Il faut diviser le num\u00e9rateur <strong>ET</strong> le d\u00e9nominateur par le m\u00eame nombre !'
+    }
+    return{originalNum:n,originalDen:d,shownNum:wn,shownDen:wd,
+        correctNum:cn,correctDen:cd,pgcd:g,isCorrect:false,
+        methodText:mt,explanation:expl}
+}
+
+/* ========== HINT SYSTEM ========== */
+function getHint(n,d){
+    if(n%10===0&&d%10===0)return{div:10,msg:'Les deux finissent par 0\u2026 essaie 10 !',type:'last'};
+    if(n%5===0&&d%5===0)return{div:5,msg:'Ils finissent par 0 ou 5\u2026 tente le 5 !',type:'last'};
+    if(n%2===0&&d%2===0)return{div:2,msg:'Les deux sont pairs\u2026 essaie 2 !',type:'last'};
+    if(digitSum(n)%9===0&&digitSum(d)%9===0)return{div:9,msg:'La somme des chiffres est divisible par 9 !',type:'all'};
+    if(digitSum(n)%3===0&&digitSum(d)%3===0)return{div:3,msg:'La somme des chiffres est divisible par 3 !',type:'all'};
+    return{div:gcd(n,d),msg:'Cherche un diviseur commun\u2026',type:'none'}
+}
+function startHintTimer(){
+    clearTimeout(S.hintTimer);
+    S.hintTimer=setTimeout(showHint,HINT_DELAY);
+}
+function clearHintTimer(){clearTimeout(S.hintTimer)}
+function showHint(){
+    var h=getHint(S.currentNum,S.currentDen);
+    showFeedback(h.msg,'hint');
+    highlightDigits(h.type);
+    $.fraction.classList.add('hint-active');
+}
+function clearHintState(){
+    $.fraction.classList.remove('hint-active');
+    restoreFractionDisplay();
+}
+function highlightDigits(type){
+    if(type==='none')return;
+    var ns=String(S.currentNum),ds=String(S.currentDen);
+    if(type==='last'){
+        $.fracNum.innerHTML=ns.slice(0,-1)+'<span class="digit-blink">'+ns.slice(-1)+'</span>';
+        $.fracDen.innerHTML=ds.slice(0,-1)+'<span class="digit-blink">'+ds.slice(-1)+'</span>';
+    }else{
+        $.fracNum.innerHTML=ns.split('').map(function(c){return'<span class="digit-blink">'+c+'</span>'}).join('');
+        $.fracDen.innerHTML=ds.split('').map(function(c){return'<span class="digit-blink">'+c+'</span>'}).join('');
+    }
+}
+function restoreFractionDisplay(){
+    if(S.currentNum){
+        $.fracNum.innerHTML='<span>'+S.currentNum+'</span>';
+        $.fracDen.innerHTML='<span>'+S.currentDen+'</span>';
+    }
+}
+
+/* ========== SCREENS ========== */
+function showScreen(id){
+    [$.menuScreen,$.gameScreen,$.resultScreen].forEach(function(s){s.classList.remove('active')});
+    $[id].classList.add('active');
+}
+
+/* ========== FEEDBACK ========== */
+function showFeedback(msg,type,dur){
+    $.feedback.textContent=msg;$.feedback.className='feedback visible '+(type||'');
+    if(dur)setTimeout(clearFeedback,dur);
+}
+function clearFeedback(){$.feedback.className='feedback'}
+
+/* ========== PROGRESS ========== */
+function initProgress(){
+    $.progressBar.innerHTML='';
+    for(var i=0;i<TOTAL_ROUNDS;i++){var d=document.createElement('div');d.className='progress-dot';$.progressBar.appendChild(d)}
+}
+function updateProgress(){
+    var dots=$.progressBar.querySelectorAll('.progress-dot');
+    for(var i=0;i<dots.length;i++){
+        dots[i].className='progress-dot';
+        if(i<S.round-1){
+            dots[i].classList.add('done');
+            var r=S.roundResults[i];
+            if(r&&r.perfect)dots[i].classList.add('perfect-dot');
+            if(r&&r.errorRound)dots[i].classList.add('error-dot');
+        }else if(i===S.round-1){dots[i].classList.add('current')}
+    }
+}
+
+/* ========== SCORE & COMBO ========== */
+function addScore(pts){
+    var m=Math.max(1,S.combo);S.score+=pts*m;
+    $.scoreValue.textContent=S.score;
+    $.scoreValue.classList.remove('bump');void $.scoreValue.offsetWidth;$.scoreValue.classList.add('bump');
+}
+function incCombo(){S.combo++;if(S.combo>S.maxCombo)S.maxCombo=S.combo;updateCombo()}
+function resetCombo(){S.combo=0;updateCombo()}
+function updateCombo(){
+    $.comboValue.textContent='x'+Math.max(1,S.combo);
+    $.comboBadge.className='combo-badge';
+    if(S.combo>=5)$.comboBadge.classList.add('fire');
+    else if(S.combo>=3)$.comboBadge.classList.add('hot');
+}
+
+/* ========== FRACTION DISPLAY ========== */
+function showFraction(n,d,anim){
+    $.fracNum.innerHTML='<span>'+n+'</span>';
+    $.fracDen.innerHTML='<span>'+d+'</span>';
+    $.fracNum.classList.remove('decomposed');$.fracDen.classList.remove('decomposed');
+    if(anim){$.fraction.classList.remove('entrance');void $.fraction.offsetWidth;$.fraction.classList.add('entrance')}
+}
+
+/* ========== DECOMPOSITION ANIMATION ========== */
+function animateDecomposition(num,den,div,qN,qD,cb){
+    S.animating=true;$.validateBtn.disabled=true;
+    var h='<span class="factor-group"><span class="factor">'+div+'</span><span class="times">&times;</span></span><span class="quotient">'+qN+'</span>';
+    var hd='<span class="factor-group"><span class="factor">'+div+'</span><span class="times">&times;</span></span><span class="quotient">'+qD+'</span>';
+    $.fracNum.innerHTML=h;$.fracDen.innerHTML=hd;
+    $.fracNum.classList.add('decomposed');$.fracDen.classList.add('decomposed');
+    setTimeout(function(){
+        document.querySelectorAll('.factor-group').forEach(function(g){g.classList.add('struck')});SFX.strike()
+    },ANIM.STRIKE);
+    setTimeout(function(){
+        document.querySelectorAll('.factor-group').forEach(function(g){g.classList.add('fade-out')})
+    },ANIM.STRIKE+ANIM.FADE);
+    setTimeout(function(){
+        showFraction(qN,qD,false);
+        $.fraction.classList.add('result-highlight');setTimeout(function(){$.fraction.classList.remove('result-highlight')},350);
+        S.animating=false;$.validateBtn.disabled=false;cb()
+    },ANIM.STRIKE+ANIM.FADE+ANIM.RESULT);
+}
+
+/* ========== GAME FLOW ========== */
+function setupErrorRounds(){
+    S.errorRounds=[];
+    var pool=[];for(var i=2;i<TOTAL_ROUNDS;i++)pool.push(i);
+    for(var j=pool.length-1;j>0;j--){var k=randInt(0,j);var tmp=pool[j];pool[j]=pool[k];pool[k]=tmp}
+    for(var e=0;e<ERROR_ROUNDS_COUNT&&e<pool.length;e++)S.errorRounds.push(pool[e]);
+    S.errorRounds.sort(function(a,b){return a-b});
+}
+
+function startGame(){
+    S.score=0;S.combo=0;S.maxCombo=0;S.round=0;S.perfectCount=0;S.roundResults=[];
+    $.scoreValue.textContent='0';updateCombo();initProgress();
+    setupErrorRounds();
+    showScreen('gameScreen');nextRound();
+}
+
+function nextRound(){
+    S.round++;
+    if(S.round>TOTAL_ROUNDS){endGame();return}
+    S.steps=0;S.isErrorRound=S.errorRounds.indexOf(S.round-1)!==-1;
+    $.roundValue.textContent=S.round;updateProgress();clearFeedback();
+
+    if(S.isErrorRound){
+        showErrorRound();
+    }else{
+        showNormalRound();
+    }
+}
+
+/* --- Normal Round --- */
+function showNormalRound(){
+    $.normalMode.classList.remove('hidden');$.errorMode.classList.add('hidden');
+    var fr=generateFraction(S.level);
+    S.currentNum=fr.num;S.currentDen=fr.den;S.originalGCD=fr.pgcd;
+    showFraction(fr.num,fr.den,true);
+    $.divisorInput.value='';$.divisorInput.disabled=false;$.validateBtn.disabled=false;
+    startHintTimer();
+    setTimeout(function(){$.divisorInput.focus()},250);
+}
+
+function submitDivisor(){
+    if(S.animating)return;
+    clearHintTimer();clearHintState();
+    var raw=$.divisorInput.value.trim(),d=parseInt(raw,10);
+    if(!raw||isNaN(d)){shakeInput();showFeedback('Entre un nombre !','error',2000);SFX.error();return}
+    if(d<2){shakeInput();showFeedback('Le diviseur doit \u00eatre sup\u00e9rieur \u00e0 1','error',2200);SFX.error();return}
+    if(S.currentNum%d!==0||S.currentDen%d!==0){
+        shakeInput();showFeedback(d+' ne divise pas '+S.currentNum+' et '+S.currentDen,'error',2500);SFX.error();resetCombo();
+        startHintTimer();return;
+    }
+    SFX.click();
+    var qN=S.currentNum/d,qD=S.currentDen/d;S.steps++;
+    $.divisorInput.value='';$.divisorInput.disabled=true;
+    animateDecomposition(S.currentNum,S.currentDen,d,qN,qD,function(){
+        S.currentNum=qN;S.currentDen=qD;
+        if(gcd(qN,qD)===1){endRound(S.steps===1)}
+        else{showFeedback('Continue ! Tu peux encore simplifier.','info',2500);$.divisorInput.disabled=false;$.divisorInput.focus();startHintTimer()}
+    });
+}
+
+/* --- Error Round --- */
+function showErrorRound(){
+    $.normalMode.classList.add('hidden');$.errorMode.classList.remove('hidden');
+    $.errorZone.classList.remove('hidden');$.errorFeedbackZone.classList.add('hidden');
+    $.errorNoBtn.disabled=false;$.errorYesBtn.disabled=false;
+    var eq=generateErrorQuestion(S.level);S.currentError=eq;
+    $.errOriginal.querySelector('.ef-num').textContent=eq.originalNum;
+    $.errOriginal.querySelector('.ef-den').textContent=eq.originalDen;
+    $.errWrong.querySelector('.ef-num').textContent=eq.shownNum;
+    $.errWrong.querySelector('.ef-den').textContent=eq.shownDen;
+    $.errWrong.classList.toggle('wrong',!eq.isCorrect);
+    $.errMethod.textContent=eq.methodText;
+}
+
+function answerError(answeredYes){
+    $.errorNoBtn.disabled=true;$.errorYesBtn.disabled=true;
+    var eq=S.currentError;
+    var correct=(answeredYes&&eq.isCorrect)||(!answeredYes&&!eq.isCorrect);
+    $.errorZone.classList.add('hidden');$.errorFeedbackZone.classList.remove('hidden');
+    var html='';
+    if(correct){
+        html='<div style="color:var(--success);font-weight:800;font-size:1.1rem;margin-bottom:6px">Bravo !</div>';
+        html+='<div>'+eq.explanation+'</div>';
+        html+='<div style="margin-top:8px">La fraction simplifi\u00e9e est <strong style="color:var(--success)">'+eq.correctNum+'/'+eq.correctDen+'</strong></div>';
+        addScore(100);incCombo();SFX.success();
+        S.roundResults.push({errorRound:true,perfect:false});
+    }else{
+        html='<div style="color:var(--error);font-weight:800;font-size:1.05rem;margin-bottom:6px">Pas tout \u00e0 fait\u2026</div>';
+        html+='<div>'+eq.explanation+'</div>';
+        html+='<div style="margin-top:8px">La bonne r\u00e9ponse est <strong style="color:var(--success)">'+eq.correctNum+'/'+eq.correctDen+'</strong></div>';
+        resetCombo();SFX.error();
+        S.roundResults.push({errorRound:true,perfect:false});
+    }
+    $.errorResultText.innerHTML=html;
+    updateProgress();
+    setTimeout(function(){clearFeedback();nextRound()},2200);
+}
+
+/* --- End Round --- */
+function endRound(isPerfect){
+    clearHintTimer();$.divisorInput.disabled=true;$.validateBtn.disabled=true;
+    if(isPerfect){S.perfectCount++;addScore(300);incCombo();showFeedback('PERFECT !','perfect');SFX.perfect()}
+    else{addScore(100);incCombo();showFeedback('Bravo !','success');SFX.success()}
+    S.roundResults.push({perfect:isPerfect});updateProgress();
+    setTimeout(function(){clearFeedback();nextRound()},ANIM.NEXT);
+}
+
+function endGame(){
+    showScreen('resultScreen');SFX.levelUp();
+    $.finalScore.textContent=S.score;
+    var sc=1;if(S.score>=800)sc=2;if(S.score>=1500||S.perfectCount>=TOTAL_ROUNDS-ERROR_ROUNDS_COUNT)sc=3;
+    var sh='';for(var i=0;i<3;i++){var e=i<sc?' earned':'';var dl=i<sc?' style="animation-delay:'+i*.2+'s"':'';sh+='<span class="star'+e+'"'+dl+'>&#9733;</span>'}
+    $.resultStars.innerHTML=sh;
+    $.resultTitle.textContent=sc===3?'Incroyable !':sc===2?'Bien jou\u00e9 !':'Termin\u00e9 !';
+    var ln=['','D\u00e9butant','Expert','L\u00e9gende'];
+    $.resultStats.innerHTML=
+        '<div>Niveau : <span class="stat-highlight">'+ln[S.level]+'</span></div>'+
+        '<div>Combo max : <span class="stat-highlight">x'+S.maxCombo+'</span></div>'+
+        '<div>Perfect : <span class="stat-highlight">'+S.perfectCount+'/'+(TOTAL_ROUNDS-ERROR_ROUNDS_COUNT)+'</span></div>';
+    saveHS(S.level,S.score);
+}
+
+function shakeInput(){$.divisorInput.classList.remove('shake');void $.divisorInput.offsetWidth;$.divisorInput.classList.add('shake')}
+
+/* ========== HIGH SCORES ========== */
+function saveHS(lv,sc){try{var d=JSON.parse(localStorage.getItem('fs_hs')||'{}');if(!d[lv]||sc>d[lv]){d[lv]=sc;localStorage.setItem('fs_hs',JSON.stringify(d))}}catch(e){}}
+function loadHS(){
+    try{var d=JSON.parse(localStorage.getItem('fs_hs')||'{}');var nm={1:'D\u00e9butant',2:'Expert',3:'L\u00e9gende'};var h='',has=false;
+    for(var l=1;l<=3;l++)if(d[l]){has=true;h+='<div>'+nm[l]+' : <span class="hs-value">'+d[l]+'</span></div>'}
+    if(has)$.highScores.innerHTML='<div style="margin-bottom:3px;font-weight:700;color:var(--accent)">Meilleurs scores</div>'+h}catch(e){}
+}
+
+/* ========== EVENTS ========== */
+function bind(){
+    $.levelCards.forEach(function(c){c.addEventListener('click',function(){$.levelCards.forEach(function(x){x.classList.remove('selected')});c.classList.add('selected');S.level=parseInt(c.getAttribute('data-level'),10);SFX.click()})});
+    $.playBtn.addEventListener('click',function(){SFX.click();startGame()});
+    $.validateBtn.addEventListener('click',submitDivisor);
+    $.divisorInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();submitDivisor()}});
+    $.divisorInput.addEventListener('input',function(){clearHintTimer();clearHintState();startHintTimer()});
+    $.replayBtn.addEventListener('click',function(){SFX.click();startGame()});
+    $.menuBtn.addEventListener('click',function(){SFX.click();showScreen('menuScreen');loadHS()});
+    $.helpBtn.addEventListener('click',function(){$.helpModal.classList.add('open')});
+    $.closeHelp.addEventListener('click',function(){$.helpModal.classList.remove('open')});
+    $.modalOverlay.addEventListener('click',function(){$.helpModal.classList.remove('open')});
+    $.soundBtn.addEventListener('click',function(){S.soundEnabled=!S.soundEnabled;$.soundIcon.innerHTML=S.soundEnabled?'&#128266;':'&#128264;'});
+    $.errorNoBtn.addEventListener('click',function(){answerError(false)});
+    $.errorYesBtn.addEventListener('click',function(){answerError(true)});
+}
+
+/* ========== PWA ========== */
+function regSW(){if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js').catch(function(){})}
+
+/* ========== INIT ========== */
+document.addEventListener('DOMContentLoaded',function(){cacheDom();bind();loadHS();regSW()});
+})();
+</script>
 </body>
 </html>

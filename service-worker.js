@@ -2,15 +2,15 @@
    FRAC-STRIKE — Service Worker (Cache-First Offline)
    ============================================================ */
 
-var CACHE_NAME = 'fracstrike-v1';
+var CACHE_NAME = 'fracstrike-v2';
 
 var STATIC_ASSETS = [
     '/',
     '/index.html',
-    '/style.css',
-    '/app.js',
     '/manifest.json',
-    '/icons/icon.svg'
+    '/icons/icon.svg',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png'
 ];
 
 /* --- Install: pre-cache static assets --- */
