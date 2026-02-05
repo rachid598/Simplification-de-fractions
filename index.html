@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f0e17">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Frac-Strike - Maîtrise la simplification de fractions !">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Frac-Strike</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+
+        <!-- ==================== MENU SCREEN ==================== -->
+        <div id="menuScreen" class="screen active">
+            <div class="menu-header">
+                <h1 class="title">FRAC<span class="accent">—</span>STRIKE</h1>
+                <p class="subtitle">Simplifie les fractions !</p>
+            </div>
+
+            <div class="level-selector">
+                <h2 class="section-title">Choisis ton niveau</h2>
+                <div class="level-cards">
+                    <button class="level-card selected" data-level="1">
+                        <span class="level-badge">1</span>
+                        <span class="level-name">Débutant</span>
+                        <span class="level-desc">Tables de 2 à 10</span>
+                    </button>
+                    <button class="level-card" data-level="2">
+                        <span class="level-badge">2</span>
+                        <span class="level-name">Expert</span>
+                        <span class="level-desc">Multiples de 10, 25, 50</span>
+                    </button>
+                    <button class="level-card" data-level="3">
+                        <span class="level-badge">3</span>
+                        <span class="level-name">Légende</span>
+                        <span class="level-desc">Nombres jusqu'à 200</span>
+                    </button>
+                </div>
+            </div>
+
+            <button id="playBtn" class="btn-primary">JOUER</button>
+
+            <div class="high-scores" id="highScores"></div>
+        </div>
+
+        <!-- ==================== GAME SCREEN ==================== -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div class="header-left">
+                    <span class="score-label">Score</span>
+                    <span class="score-value" id="scoreValue">0</span>
+                </div>
+                <div class="header-center">
+                    <div class="combo-badge" id="comboBadge">
+                        <span id="comboValue">x1</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span id="roundValue">1</span><span class="round-total">/10</span>
+                    <button id="soundBtn" class="btn-icon" title="Son">
+                        <span id="soundIcon">&#128266;</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-body">
+                <!-- Feedback area -->
+                <div class="feedback-zone">
+                    <div class="feedback" id="feedback"></div>
+                </div>
+
+                <!-- Fraction display -->
+                <div class="fraction-zone" id="fractionZone">
+                    <div class="fraction" id="fraction">
+                        <div class="frac-num" id="fracNum">
+                            <span class="num-val">18</span>
+                        </div>
+                        <div class="frac-bar"></div>
+                        <div class="frac-den" id="fracDen">
+                            <span class="den-val">24</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input area -->
+                <div class="input-zone" id="inputZone">
+                    <label class="input-label" for="divisorInput">Divise par :</label>
+                    <div class="input-row">
+                        <input type="number" id="divisorInput" class="divisor-input"
+                               min="2" inputmode="numeric" pattern="[0-9]*"
+                               placeholder="?" autocomplete="off">
+                        <button id="validateBtn" class="btn-validate" aria-label="Valider">&#10003;</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress dots -->
+            <div class="progress-bar" id="progressBar"></div>
+
+            <!-- Help FAB -->
+            <button id="helpBtn" class="btn-help" aria-label="Aide">?</button>
+        </div>
+
+        <!-- ==================== RESULT SCREEN ==================== -->
+        <div id="resultScreen" class="screen">
+            <h2 class="result-title" id="resultTitle">Terminé !</h2>
+            <div class="result-stars" id="resultStars"></div>
+            <div class="result-score-block">
+                <span class="result-score-label">Score final</span>
+                <span class="result-score-value" id="finalScore">0</span>
+            </div>
+            <div class="result-stats" id="resultStats"></div>
+            <div class="result-actions">
+                <button id="replayBtn" class="btn-primary">REJOUER</button>
+                <button id="menuBtn" class="btn-secondary">MENU</button>
+            </div>
+        </div>
+
+        <!-- ==================== HELP MODAL ==================== -->
+        <div id="helpModal" class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <button class="modal-close" id="closeHelp" aria-label="Fermer">&#10005;</button>
+                <h2 class="modal-title">Critères de divisibilité</h2>
+                <div class="rules-grid">
+                    <div class="rule-bubble color-blue">
+                        <div class="rule-divisor">÷ 2</div>
+                        <div class="rule-text">Le dernier chiffre est <strong>pair</strong><br>(0, 2, 4, 6, 8)</div>
+                    </div>
+                    <div class="rule-bubble color-green">
+                        <div class="rule-divisor">÷ 3</div>
+                        <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 3</div>
+                    </div>
+                    <div class="rule-bubble color-orange">
+                        <div class="rule-divisor">÷ 5</div>
+                        <div class="rule-text">Le dernier chiffre est <strong>0</strong> ou <strong>5</strong></div>
+                    </div>
+                    <div class="rule-bubble color-purple">
+                        <div class="rule-divisor">÷ 9</div>
+                        <div class="rule-text">La <strong>somme des chiffres</strong> est divisible par 9</div>
+                    </div>
+                    <div class="rule-bubble color-red">
+                        <div class="rule-divisor">÷ 10</div>
+                        <div class="rule-text">Le dernier chiffre est <strong>0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
